@@ -1,0 +1,192 @@
+[
+ {
+  "group": "Baseline",
+  "label": "all defaults",
+  "ratio": 3.26,
+  "targeted": 4.95,
+  "untargeted": 1.52,
+  "missed": 9,
+  "daly10": 1.86,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Bank spread over prime",
+  "label": "+0pp",
+  "ratio": 3.34,
+  "targeted": 5,
+  "untargeted": 1.5,
+  "missed": 11,
+  "daly10": 1.88,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Bank spread over prime",
+  "label": "+2pp",
+  "ratio": 3.23,
+  "targeted": 4.95,
+  "untargeted": 1.53,
+  "missed": 8,
+  "daly10": 1.86,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Bank spread over prime",
+  "label": "+3pp",
+  "ratio": 3.17,
+  "targeted": 5.14,
+  "untargeted": 1.62,
+  "missed": 7,
+  "daly10": 1.93,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Loan size (months)",
+  "label": "6 months",
+  "ratio": 3.37,
+  "targeted": 5.19,
+  "untargeted": 1.54,
+  "missed": 11,
+  "daly10": 1.95,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Loan size (months)",
+  "label": "16 months",
+  "ratio": 3.24,
+  "targeted": 5.08,
+  "untargeted": 1.57,
+  "missed": 7,
+  "daly10": 1.91,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Loan repayment",
+  "label": "amortising over 36m",
+  "ratio": 2.36,
+  "targeted": 4.28,
+  "untargeted": 1.82,
+  "missed": 10,
+  "daly10": 1.61,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Firm-level noise",
+  "label": "8%/month, persistence 0.5",
+  "ratio": 3.22,
+  "targeted": 5.12,
+  "untargeted": 1.59,
+  "missed": 9,
+  "daly10": 1.93,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Neighbourhood visitor share",
+  "label": "10%",
+  "ratio": 3.26,
+  "targeted": 4.98,
+  "untargeted": 1.53,
+  "missed": 10,
+  "daly10": 1.87,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Neighbourhood visitor share",
+  "label": "40%",
+  "ratio": 3.22,
+  "targeted": 4.73,
+  "untargeted": 1.47,
+  "missed": 10,
+  "daly10": 1.78,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Shock size",
+  "label": "-15% visitors",
+  "ratio": 3.41,
+  "targeted": 4.88,
+  "untargeted": 1.43,
+  "missed": 8,
+  "daly10": 1.83,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Shock size",
+  "label": "-40% visitors",
+  "ratio": 3.05,
+  "targeted": 5.43,
+  "untargeted": 1.78,
+  "missed": 11,
+  "daly10": 2.04,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Shock length",
+  "label": "2 quarters",
+  "ratio": 3.43,
+  "targeted": 4.96,
+  "untargeted": 1.45,
+  "missed": 8,
+  "daly10": 1.86,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Retail exposure",
+  "label": "re-measured from 2025 visitor spending",
+  "ratio": 3.32,
+  "targeted": 4.88,
+  "untargeted": 1.47,
+  "missed": 9,
+  "daly10": 1.83,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Cash buffers",
+  "label": "half (US values / 2)",
+  "ratio": 2.9,
+  "targeted": 5.68,
+  "untargeted": 1.96,
+  "missed": 7,
+  "daly10": 2.14,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Cash buffers",
+  "label": "double (US values x 2)",
+  "ratio": 3.67,
+  "targeted": 3.99,
+  "untargeted": 1.09,
+  "missed": 6,
+  "daly10": 1.5,
+  "dalyPerJob": 0.0376
+ },
+ {
+  "group": "Depression after job loss",
+  "label": "international, 18pp",
+  "ratio": 3.26,
+  "targeted": 4.95,
+  "untargeted": 1.52,
+  "missed": 9,
+  "daly10": 2.71,
+  "dalyPerJob": 0.0548
+ },
+ {
+  "group": "Depression episode length",
+  "label": "mean 10.7 months",
+  "ratio": 3.26,
+  "targeted": 4.95,
+  "untargeted": 1.52,
+  "missed": 9,
+  "daly10": 2.58,
+  "dalyPerJob": 0.052
+ },
+ {
+  "group": "Excess mortality",
+  "label": "+63% (meta-analysis)",
+  "ratio": 3.26,
+  "targeted": 4.95,
+  "untargeted": 1.52,
+  "missed": 9,
+  "daly10": 2.11,
+  "dalyPerJob": 0.0426
+ }
+]

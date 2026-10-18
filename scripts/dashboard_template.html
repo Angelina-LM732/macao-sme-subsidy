@@ -1,0 +1,1744 @@
+<meta charset="utf-8">
+<!-- BUILD TEMPLATE - not the dashboard. Open dashboard.html instead.
+     scripts/05_build.py fills the data placeholders below and writes dashboard.html. -->
+<title>Macao SME Subsidy Targeting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Oswald:wght@500;600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&text=__ZHTEXT__&display=swap">
+<style>
+/* Layout: a policy workbench. Sticky scenario panel on the left, findings on the right,
+   method & sources at the foot. Azulejo cobalt on porcelain; data in mono. */
+:root {
+  /* warm paper and ink, with orange / sky / deep-green data colours; cobalt for the Macao plaques */
+  --bg: #f2ede3;
+  --panel: #fbf8f1;
+  --ink: #1c1b18;
+  --ink-2: #4a4740;
+  --muted: #898477;
+  --line: #e3dccd;
+  --line-2: #cdc4b0;
+  --accent: #24479b;
+  --accent-soft: #e3e7f1;
+  --good: #2e7a4b;
+  --good-soft: #e0ecdf;
+  --warn: #a95c14;
+  --warn-soft: #f5e6d1;
+  --g1: #e8692d; --g2: #5f93d3; --g3: #2f6b45;
+  --div-neg: #d64a2f; --div-neg-2: #f0ab92; --div-mid: #efe9dc; --div-pos-2: #a9c4e6; --div-pos: #3e6fb5;
+  --tip-bg: #1c1b18; --tip-fg: #f6f1e7;
+  --f-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --f-num: "Oswald", "Bebas Neue", "Arial Narrow", sans-serif-condensed, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 10px;
+  /* Macao street-sign enamel: cobalt on glazed white. Fixed in both themes, like the real tiles. */
+  --sign: #1c4196; --enamel: #fdfdfa;
+  --f-zh: "Noto Serif TC", "Songti TC", "PMingLiU", "MingLiU", serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15140f; --panel: #1f1d18; --ink: #f2ede3; --ink-2: #c6bfb1; --muted: #8f897c;
+  --line: #302d26; --line-2: #454036; --accent: #8fb0f0; --accent-soft: #1f2942;
+  --good: #5cc489; --good-soft: #17301f; --warn: #f0a35a; --warn-soft: #3a2a17;
+  --g1: #f08a4b; --g2: #86b2ea; --g3: #4fb27a;
+  --div-neg: #ec6a4f; --div-neg-2: #7a3a2c; --div-mid: #2a2721; --div-pos-2: #2d4c7a; --div-pos: #6a9be0;
+  --tip-bg: #f2ede3; --tip-fg: #1c1b18; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #15140f; --panel: #1f1d18; --ink: #f2ede3; --ink-2: #c6bfb1; --muted: #8f897c;
+  --line: #302d26; --line-2: #454036; --accent: #8fb0f0; --accent-soft: #1f2942;
+  --good: #5cc489; --good-soft: #17301f; --warn: #f0a35a; --warn-soft: #3a2a17;
+  --g1: #f08a4b; --g2: #86b2ea; --g3: #4fb27a;
+  --div-neg: #ec6a4f; --div-neg-2: #7a3a2c; --div-mid: #2a2721; --div-pos-2: #2d4c7a; --div-pos: #6a9be0;
+  --tip-bg: #f2ede3; --tip-fg: #1c1b18; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--f-body); margin: 0; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.7rem, 3.2vw, 2.5rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; }
+h3 { font-size: 1.02rem; font-weight: 700; }
+p { margin: 0; }
+.mono { font-family: var(--f-mono); font-size: 0.86em; }
+.eyebrow { font: 600 0.74rem/1 var(--f-body); letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+.sub { color: var(--ink-2); }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* header */
+.top { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 28px; align-items: end; padding-block-end: 22px; border-bottom: 1px solid var(--line); }
+.top .lede { margin-top: 12px; max-width: 64ch; color: var(--ink-2); font-size: 1.06rem; }
+.anchor { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; display: grid; gap: 10px; }
+.anchor dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 14px; margin: 0; }
+.anchor dt { font-size: 0.74rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.anchor dd { margin: 0; font: 600 1.02rem/1.2 var(--f-mono); }
+.anchor .note { font-size: 0.82rem; color: var(--ink-2); }
+nav.jump { display: flex; gap: 6px 18px; flex-wrap: wrap; padding-block: 14px; font-size: 0.92rem; }
+nav.jump a { text-decoration: none; color: var(--ink-2); }
+nav.jump a:hover { color: var(--accent); }
+
+/* main layout */
+.main { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
+aside.controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 14px); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 18px; max-height: calc(100vh - 28px); overflow: auto; }
+.cgroup { display: grid; gap: 12px; }
+.cgroup + .cgroup { border-top: 1px solid var(--line); padding-top: 16px; }
+.field { display: grid; gap: 5px; }
+.field label, .field .lab { font-size: 0.86rem; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.field output { font: 500 0.84rem var(--f-mono); color: var(--ink); }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+select { font: inherit; font-size: 0.92rem; padding: 6px 8px; border-radius: 7px; border: 1px solid var(--line-2); background: var(--panel); color: var(--ink); }
+.check { display: flex; gap: 8px; align-items: center; font-size: 0.88rem; color: var(--ink-2); }
+.seg { display: flex; border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
+.seg button { flex: 1; font: 600 0.82rem var(--f-body); padding: 7px 6px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line-2); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+.status { font-size: 0.8rem; color: var(--muted); min-height: 1.2em; }
+details summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--ink); }
+details[open] summary { margin-bottom: 10px; }
+
+.content { display: grid; gap: 22px; min-width: 0; }
+section.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.head p { max-width: 70ch; }
+
+/* KPIs */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.kpi .v { font: 600 2.6rem/1 var(--f-num); letter-spacing: -0.01em; }
+.kpi .v small { font: 500 0.9rem var(--f-body); color: var(--ink-2); }
+.kpi .d { font-size: 0.84rem; color: var(--ink-2); }
+.kpi.hero { background: var(--accent-soft); border-color: transparent; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font: 600 0.74rem var(--f-body); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.acc { background: var(--accent-soft); color: var(--accent); }
+
+/* table */
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font: 600 0.74rem var(--f-body); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); background: var(--bg); position: sticky; top: 0; }
+th.l, td.l { text-align: left; }
+td { font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--accent-soft); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; vertical-align: -1px; }
+.bar { display: inline-block; height: 8px; border-radius: 0 4px 4px 0; background: var(--accent); vertical-align: middle; margin-left: 6px; }
+.up { color: var(--good); } .down { color: var(--div-neg); }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { font: 600 0.8rem var(--f-body); border: 1px solid var(--line-2); background: var(--panel); color: var(--ink-2); padding: 4px 10px; border-radius: 99px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.linkbtn { font: 600 0.84rem var(--f-body); border: 0; background: none; color: var(--accent); cursor: pointer; padding: 4px 0; }
+
+/* charts */
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.chart { width: 100%; min-width: 0; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.axis text, .lbl { fill: var(--muted); font: 11px var(--f-body); }
+.grid line { stroke: var(--line); stroke-width: 1; }
+.base { stroke: var(--line-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--ink-2); }
+.tip { position: fixed; pointer-events: none; background: var(--tip-bg); color: var(--tip-fg); font-size: 0.8rem; line-height: 1.35; padding: 7px 9px; border-radius: 6px; max-width: 260px; z-index: 10; }
+.ap-form { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.ap-form .field input, .ap-form .field select { width: 100%; font: inherit; font-size: 0.95rem; padding: 7px 9px; border-radius: 7px; border: 1px solid var(--line-2); background: var(--panel); color: var(--ink); }
+.ap-out { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.ap-bars { display: grid; gap: 10px; }
+.ap-row { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 3.2em; gap: 10px; align-items: center; font-size: 0.9rem; }
+.ap-track { height: 14px; background: var(--bg); border-radius: 0 7px 7px 0; overflow: hidden; }
+.ap-fill { height: 100%; border-radius: 0 7px 7px 0; transition: width 0.25s ease; }
+.ap-val { font: 600 0.95rem var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.ap-tier { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 8px; }
+.ap-tier.priority { border-color: var(--good); background: var(--good-soft); }
+.ap-tier .t { font: 700 1.25rem/1.15 var(--f-display); }
+@media (max-width: 700px) { .ap-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .ap-out { grid-template-columns: minmax(0, 1fr); } }
+.heat td { text-align: center; font: 500 0.78rem var(--f-mono); padding: 6px 4px; border: 2px solid var(--panel); min-width: 48px; }
+.heat th { position: static; background: none; text-align: center; }
+.heat th.l { text-align: left; }
+.note { font-size: 0.86rem; color: var(--ink-2); }
+.callout { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: var(--ink); }
+.callout.info { border-left-color: var(--accent); background: var(--accent-soft); }
+
+/* method */
+ol.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 10px; max-width: 80ch; }
+ol.steps li::marker { font-family: var(--f-mono); color: var(--accent); }
+.src td, .src th { white-space: normal; text-align: left; vertical-align: top; }
+.src td.id { font-family: var(--f-mono); font-size: 0.82rem; white-space: nowrap; }
+.tag { font: 600 0.7rem var(--f-body); letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; white-space: nowrap; }
+.tag.data { background: var(--accent-soft); color: var(--accent); }
+.tag.lit { background: var(--good-soft); color: var(--good); }
+.tag.asm { background: var(--warn-soft); color: var(--warn); }
+ul.lim { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 85ch; }
+
+/* ---------- Macao touches ---------- */
+/* street-sign plaque: Chinese over Portuguese, cobalt double rule on white enamel */
+.plaque { display: inline-grid; justify-items: center; gap: 1px; padding: 5px 14px 6px; background: var(--enamel); color: var(--sign);
+  border: 2px solid var(--sign); border-radius: 8px; box-shadow: inset 0 0 0 2px var(--enamel), inset 0 0 0 3.5px var(--sign), 0 6px 14px -9px rgba(10, 25, 60, 0.55);
+  justify-self: start; max-width: 100%; margin-bottom: 9px; }
+.plaque .zh { font: 700 1.02rem/1.2 var(--f-zh); letter-spacing: 0.2em; margin-right: -0.2em; }
+.plaque .pt { font: 700 0.6rem/1.15 var(--f-body); letter-spacing: 0.13em; text-transform: uppercase; text-align: center; }
+.plaque.big { padding: 8px 20px 9px; }
+.plaque.big .zh { font-size: clamp(1.05rem, 2.2vw, 1.4rem); }
+.plaque.big .pt { font-size: 0.68rem; }
+.plaque.small { padding: 3px 10px 4px; margin: 0; }
+.plaque.small .zh { font-size: 0.86rem; }
+.head > div:first-child { display: grid; }
+/* calcada portuguesa: the wave pavement of Largo do Senado */
+.calcada { height: 18px; background: var(--ink); opacity: 0.88;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='18' viewBox='0 0 56 18'%3E%3Cpath d='M0 9 C 9 1, 19 1, 28 9 S 47 17, 56 9' fill='none' stroke='black' stroke-width='4.2'/%3E%3C/svg%3E") repeat-x center / 56px 18px;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='18' viewBox='0 0 56 18'%3E%3Cpath d='M0 9 C 9 1, 19 1, 28 9 S 47 17, 56 9' fill='none' stroke='black' stroke-width='4.2'/%3E%3C/svg%3E") repeat-x center / 56px 18px; }
+.calcada.thin { height: 12px; opacity: 0.5; -webkit-mask-size: 38px 12px; mask-size: 38px 12px; }
+.anchor { position: relative; border: 2px solid var(--sign); box-shadow: inset 0 0 0 3px var(--panel), inset 0 0 0 4.5px var(--sign); padding: 18px 20px; }
+.anchor > .eyebrow { padding-right: 50px; }
+.anchor .tileorn { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; color: var(--sign); opacity: 0.9; }
+:root[data-theme="dark"] .anchor .tileorn { color: var(--accent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .anchor .tileorn { color: var(--accent); } }
+.kpi.hero { background: var(--ink); color: var(--bg); }
+.kpi.hero .v { font-size: 3.4rem; color: var(--g1); }
+.kpi.hero .eyebrow { color: var(--bg); opacity: 0.8; }
+.kpi.hero .d, .kpi.hero .v small { color: var(--bg); opacity: 0.86; }
+nav.jump a { padding: 3px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--panel); font-size: 0.86rem; }
+nav.jump a:hover { border-color: var(--accent); }
+section.card { box-shadow: 0 1px 2px rgba(16, 33, 63, 0.04), 0 8px 24px -16px rgba(16, 33, 63, 0.18); }
+footer.foot { margin-top: 8px; padding-bottom: 56px; }
+footer.foot .foot-in { padding-block: 16px 30px; font-size: 0.82rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; }
+
+/* ---------- 3D risk map: always a night view ---------- */
+.night { --panel: #1f1d18; --bg: #141310; --ink: #f2ede3; --ink-2: #c6bfb1; --muted: #8f897c; --line: #34312a; --line-2: #4a453b;
+  --accent: #8fb0f0; --accent-soft: #232b3d; background: #171612; color: var(--ink); border-color: #2c2924; }
+.map-legend { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 0.76rem; color: var(--ink-2); display: grid; gap: 5px; }
+.map-legend .ramp { height: 8px; border-radius: 4px; }
+.map-legend .ticks { display: flex; justify-content: space-between; font: 500 0.7rem var(--f-mono); color: var(--muted); }
+.map-side { display: grid; gap: 8px; align-content: start; font-size: 0.84rem; }
+.map-side .ms-h { font-size: 0.74rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.ms-row { display: grid; gap: 4px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; background: rgba(255, 255, 255, 0.015); text-align: left; color: inherit; font: inherit; width: 100%; }
+.ms-row:hover { border-color: var(--line-2); }
+.ms-row[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.ms-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.ms-top .nm { font-weight: 600; }
+.ms-top .nm .zh { font: 700 0.78rem var(--f-zh); color: var(--muted); margin-left: 6px; letter-spacing: 0.05em; }
+.ms-top .n { font: 500 0.74rem var(--f-mono); color: var(--muted); white-space: nowrap; }
+.ms-bar { position: relative; height: 7px; background: #2c2922; border-radius: 4px; overflow: hidden; }
+.ms-bar span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; transition: width 0.3s ease; }
+.ms-val { font: 500 0.74rem var(--f-mono); color: var(--ink-2); }
+.ms-tot { border-top: 1px solid var(--line); padding-top: 8px; font-size: 0.8rem; color: var(--ink-2); display: grid; gap: 2px; }
+.ms-tot b { font: 600 1.05rem var(--f-mono); color: var(--ink); }
+.dotg { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+@media (max-width: 900px) { .mapgrid { grid-template-columns: minmax(0, 1fr); } #map-side { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); } #map-side .ms-h, .ms-tot { grid-column: 1 / -1; } }
+@media (max-width: 520px) { .plaque.big { padding: 7px 12px 8px; } .plaque.big .zh { font-size: 0.98rem; letter-spacing: 0.04em; margin-right: 0; } .map-hint { display: none; } .mapbox { height: 420px; } }
+
+/* ---------- hero: the live 3D map ---------- */
+.mhero { position: relative; overflow: hidden; border: 0; border-radius: 0; padding: 0; display: block;
+  background: radial-gradient(110% 90% at 68% 18%, #2b2721 0%, #1a1814 48%, #0e0d0b 100%); }
+.mhero::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(14,13,11,0.95) 0%, rgba(14,13,11,0.82) 28%, rgba(14,13,11,0) 48%), linear-gradient(0deg, rgba(14,13,11,0.7) 0%, rgba(14,13,11,0) 18%); }
+.hero-map { position: absolute; inset: 0; }
+.hero-map canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; outline: none; }
+.hero-map canvas:active { cursor: grabbing; }
+.hero-in { position: relative; z-index: 2; max-width: 1360px; margin: 0 auto; padding: 30px 20px 22px; min-height: clamp(660px, 92vh, 840px);
+  display: grid; grid-template-columns: minmax(0, 470px) minmax(0, 1fr) 286px; gap: 20px; pointer-events: none; }
+.hero-text, .hero-side, .map-ui { pointer-events: auto; }
+.hero-text { display: grid; gap: 12px; align-content: start; }
+.mhero h1 { font-size: clamp(1.75rem, 2.7vw, 2.45rem); color: #fff; letter-spacing: -0.012em; }
+.mhero .lede { color: #b4c0d6; font-size: 0.98rem; }
+.mhero .plaque { margin-bottom: 4px; }
+.hero-ctl { background: rgba(31, 29, 24, 0.78); border: 1px solid #3a362e; border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; backdrop-filter: blur(6px); }
+.hc-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.hc-top output { font: 600 1.05rem var(--f-mono); color: #fff; }
+.hc-sub { font-size: 0.78rem; color: var(--muted); }
+.hero-ctl input[type=range] { accent-color: #ff6b7d; }
+.hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.hero-stats div { display: grid; gap: 2px; }
+.hero-stats b { font: 700 1.7rem/1 var(--f-display); color: #fff; font-variant-numeric: tabular-nums; }
+.hero-stats span { font-size: 0.76rem; color: var(--ink-2); line-height: 1.3; }
+.hero-mid { display: flex; align-items: flex-end; justify-content: center; }
+.map-ui { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: center; }
+.map-ui button { font: 600 0.78rem var(--f-body); color: var(--ink); background: rgba(20, 19, 16, 0.8); border: 1px solid var(--line-2); border-radius: 7px; padding: 5px 9px; cursor: pointer; backdrop-filter: blur(4px); }
+.map-ui button:hover { border-color: var(--accent); }
+.map-hint { font-size: 0.72rem; color: var(--muted); margin-left: 6px; }
+.hero-side { align-self: start; display: grid; gap: 8px; background: rgba(20, 19, 16, 0.66); border: 1px solid #34312a; border-radius: 12px; padding: 10px; backdrop-filter: blur(8px); max-height: calc(100% - 4px); overflow: auto; }
+#map-side { display: grid; gap: 6px; font-size: 0.84rem; }
+#map-side .ms-row { padding: 6px 8px; gap: 3px; }
+#map-side .ms-h { font-size: 0.72rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.map-note { margin: 12px 0 18px; font-size: 0.78rem; color: var(--muted); }
+.anchor.strip { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr); gap: 8px 24px; align-items: center; margin-bottom: 16px; }
+.anchor.strip dl { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-row: span 2; }
+.anchor.strip > .eyebrow { padding-right: 0; }
+.anchor.strip .tileorn { display: none; }
+@media (max-width: 1000px) {
+  .mhero { display: flex; flex-direction: column; }
+  .mhero::before { display: none; }
+  .hero-in { display: contents; }
+  .hero-text { order: 1; padding: 26px 16px 10px; }
+  .hero-map { order: 2; position: relative; height: 460px; }
+  .hero-mid { order: 3; padding: 8px 16px 0; justify-content: flex-start; }
+  .hero-side { order: 4; margin: 12px 16px 22px; max-height: none; }
+  #map-side { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  #map-side .ms-h, #map-side .ms-tot { grid-column: 1 / -1; }
+  .anchor.strip { grid-template-columns: minmax(0, 1fr); }
+  .anchor.strip dl { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-row: auto; }
+}
+@media (max-width: 520px) { .hero-map { height: 420px; } .map-hint { display: none; } .hero-stats b { font-size: 1.35rem; } }
+
+.night { --div-neg: #e66767; --div-neg-2: #7a3634; --div-mid: #1c2638; --div-pos-2: #2b4f80; --div-pos: #5598e7; }
+
+.pr-flow svg text { font-family: var(--f-body); }
+.pr-ov { font: 700 13px var(--f-mono); fill: #fff; }
+.pr-on { font: 600 12.5px var(--f-body); fill: var(--ink); }
+.pr-sub { font: 500 10.5px var(--f-body); fill: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.pr-val { font: 600 11.5px var(--f-mono); }
+.thr { stroke-dasharray: 3 13; animation: thrflow 1.6s linear infinite; }
+@keyframes thrflow { from { stroke-dashoffset: 16; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .thr { animation: none; stroke-dasharray: none; } }
+.pr-table summary { color: var(--ink-2); }
+
+/* ---------- v2 modules ---------- */
+.head-side { display: grid; gap: 8px; justify-items: end; flex: none; }
+@media (max-width: 700px) { .head-side { order: -1; justify-items: start; } }
+.head { align-items: flex-start; }
+.head > div:first-child { flex: 1 1 520px; }
+.plaque.side { margin: 2px 0 0; flex: none; }
+.head h2 .chap-n { font: 600 1.6em/1 var(--f-num); color: var(--g1); margin-right: 10px; vertical-align: -0.08em; }
+.head h2 .chap-n i { font-style: normal; font-size: 0.5em; color: var(--muted); margin-left: 1px; vertical-align: 0.5em; }
+@media (max-width: 700px) { .plaque.side { order: -1; } }
+
+/* ---------- story steps ---------- */
+.chap { display: flex; align-items: baseline; gap: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); margin-bottom: 4px; }
+.chap-n { font: 600 2rem/1 var(--f-num); color: var(--g1); }
+.chap-n i { font-style: normal; font-size: 1rem; color: var(--muted); margin-left: 2px; }
+.chap-q { font: 600 1.05rem/1.25 var(--f-display); color: var(--ink); }
+#network .chap-n, #method .chap-n { color: var(--muted); font-size: 1.4rem; }
+#network .chap, #method .chap { border-bottom-width: 1px; }
+.chap-foot { display: grid; gap: 10px; border-top: 1px solid var(--line-2); padding-top: 14px; margin-top: 4px; }
+.chap-take { font: 1.02rem/1.45 var(--f-body); color: var(--ink); margin: 0; }
+.chap-take b { font-weight: 700; }
+.chap-next { justify-self: start; font: 600 0.92rem var(--f-body); color: var(--bg); background: var(--ink); border: 0; border-radius: 99px; padding: 9px 16px; cursor: pointer; text-align: left; }
+.chap-next:hover { background: var(--g1); color: #fff; }
+.mhero .chap-foot { border-top-color: #3a362e; }
+.mhero .chap-take { color: #f2ede3; font-size: 0.92rem; }
+.mhero .chap-next { background: var(--g1); color: #fff; }
+.hero-kicker { font: 600 0.95rem var(--f-display); color: var(--g1); margin-top: -4px; }
+.tourbar { position: fixed; z-index: 20; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: var(--ink); color: var(--bg); padding: 7px 10px; border-radius: 99px; box-shadow: 0 10px 30px -10px rgba(0,0,0,.45); max-width: calc(100vw - 24px); }
+.tourbar[hidden] { display: none; }
+.tb-btn { width: 30px; height: 30px; border-radius: 50%; border: 0; background: rgba(255,255,255,.12); color: inherit; cursor: pointer; font-size: 0.95rem; }
+.tb-btn:hover { background: var(--g1); color: #fff; }
+.tb-dots { display: flex; gap: 6px; }
+.tb-dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid currentColor; background: transparent; padding: 0; cursor: pointer; opacity: .55; }
+.tb-dot.done { background: currentColor; opacity: .55; }
+.tb-dot.on { background: var(--g1); border-color: var(--g1); opacity: 1; transform: scale(1.25); }
+.tb-lab { font-size: 0.84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px; }
+.tb-lab b { font-family: var(--f-num); font-weight: 600; margin-right: 4px; color: var(--g1); }
+@media (max-width: 600px) { .tb-lab { display: none; } .chap-n { font-size: 1.6rem; } }
+
+.rg-lab { font: 600 9.5px var(--f-body); fill: var(--ink-2); letter-spacing: 0.08em; }
+.rg-q { font: 500 10.5px var(--f-mono); fill: var(--muted); }
+.rg-q.on { fill: var(--ink); font-weight: 700; }
+
+.card.charcoal { --panel: #262522; --bg: #1b1a17; --ink: #f2ede3; --ink-2: #c9c2b4; --muted: #8f897c; --line: #3a3730; --line-2: #544e43;
+  --accent: #86b2ea; --accent-soft: #233149; --good: #ff8a5c; --good-soft: #3b2419; background: var(--panel); color: var(--ink); border-color: #34312b; }
+.card.charcoal .sub { color: var(--ink-2); }
+.ap-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 28px; }
+.ap-stat { display: grid; gap: 4px; }
+.ap-stat b { font: 600 clamp(3rem, 6vw, 4.6rem)/0.9 var(--f-num); letter-spacing: -0.01em; }
+.ap-stat span { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--ink-2); }
+.ap-waffle { grid-template-columns: repeat(25, minmax(0, 1fr)) !important; max-width: none !important; gap: 3px !important; }
+.ap-peoplewrap { display: grid; gap: 8px; }
+.ap-people { display: flex; flex-wrap: wrap; gap: 3px; }
+.person { width: 15px; height: 30px; color: var(--muted); opacity: 0.55; transition: color 0.35s ease, opacity 0.35s ease; }
+.person.s-safe { color: var(--accent); opacity: 1; }
+.person.s-saved { color: var(--good); opacity: 1; }
+@media (max-width: 700px) { .ap-waffle { grid-template-columns: repeat(10, minmax(0, 1fr)) !important; max-width: 380px !important; } .ap-stats { gap: 8px 14px; } .ap-stat span { font-size: 0.78rem; } .ap-stat span svg { display: none; } }
+
+.iso-val { font: 600 30px var(--f-num); fill: var(--ink); }
+.iso-lab { font: 600 9.5px var(--f-body); fill: var(--ink-2); letter-spacing: 0.06em; }
+.iso-rank { font: 600 13px var(--f-num); fill: #fff; }
+.iso-cap { font: 600 11px var(--f-body); fill: var(--ink); }
+.iso-cap2 { font: 500 10px var(--f-body); fill: var(--muted); }
+.dot-n { font: 600 22px var(--f-num); }
+.dot-lab { font: 600 10.5px var(--f-body); fill: var(--ink); }
+.dot-zh { font: 700 10.5px var(--f-zh); fill: var(--muted); }
+#rank-iso svg, #rank-dots svg { max-height: 460px; }
+
+.hnotes { margin: 0; padding-left: 1.4em; display: grid; gap: 3px; font-size: 0.84rem; color: var(--ink-2); }
+.hnotes li::marker { font: 700 0.8rem var(--f-mono); color: var(--ink); }
+:root { --z-low: #8a94a8; --z-mid: var(--good); --z-high: var(--accent); }
+.zlab { font: 600 11.5px var(--f-body); }
+.zones { display: grid; gap: 8px; }
+.zkey { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 0.84rem; }
+.zrow { display: grid; grid-template-columns: 10em minmax(0, 1fr); gap: 10px; align-items: center; font-size: 0.86rem; }
+.zbar { display: flex; height: 24px; border-radius: 6px; overflow: hidden; background: var(--bg); }
+.zbar span { display: flex; align-items: center; justify-content: center; color: #fff; font: 600 0.78rem var(--f-mono); transition: width 0.4s ease; min-width: 0; overflow: hidden; }
+.ap-wafwrap { display: grid; gap: 10px; }
+.ap-wafhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ap-waffle { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; max-width: 420px; }
+.shop { width: 100%; height: auto; display: block; color: var(--muted); transition: color 0.35s ease, transform 0.35s ease; }
+.shop.s-safe { color: var(--accent); }
+.shop.s-saved { color: var(--good); transform: scale(1.08); }
+.shop.s-closed { color: var(--muted); --sh: 1; opacity: 0.55; }
+.ap-key { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.86rem; }
+.ap-key b { font-family: var(--f-mono); }
+.pr-ctl { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pr-ctl input[type=range] { flex: 1 1 160px; max-width: 320px; }
+.playbtn { font: 600 0.84rem var(--f-body); border: 1px solid var(--accent); color: var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 6px 12px; cursor: pointer; min-width: 92px; }
+.pr-qlab { font-size: 0.9rem; color: var(--ink-2); }
+.pr-val { font: 600 0.84rem var(--f-mono); text-align: right; font-variant-numeric: tabular-nums; }
+.heat .qcol { box-shadow: inset 0 0 0 2px var(--ink); }
+.heat th.qcol { color: var(--ink); box-shadow: none; text-decoration: underline 2px; }
+.dym { table-layout: fixed; min-width: 640px; }
+.dym td { min-width: 0; padding: 6px 2px; font-size: 0.74rem; }
+.dym th { text-transform: none; letter-spacing: 0; font-size: 0.7rem; padding: 6px 3px; overflow-wrap: anywhere; }
+.dym th.l { width: 13%; }
+#health-table td, #health-table th { white-space: normal; }
+.dym td.tot { background: none; color: var(--ink); font-weight: 600; }
+.dym th { white-space: normal; line-height: 1.2; vertical-align: bottom; }
+.hchain { display: grid; grid-template-columns: minmax(0, 0.9fr) 18px minmax(0, 1fr) 18px minmax(0, 1fr) 18px minmax(0, 1.25fr) 18px minmax(0, 1.05fr); align-items: stretch; gap: 4px; }
+.hnode { border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 8px; align-content: start; background: var(--panel); }
+.hnode.hl { border-color: var(--good); background: var(--good-soft); }
+.hk { font: 600 0.7rem var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.hval { display: grid; gap: 1px; }
+.hval b { font: 700 1.35rem/1.1 var(--f-display); }
+.hval span { font-size: 0.8rem; color: var(--ink-2); }
+.hval em { font-style: normal; font: 500 0.74rem var(--f-mono); color: var(--muted); }
+.harr { align-self: center; height: 2px; background: var(--line-2); position: relative; }
+.harr::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left: 7px solid var(--line-2); border-right: 0; }
+.hcomp { position: relative; height: 22px; background: var(--bg); border-radius: 5px; display: flex; overflow: visible; }
+.hcomp span { height: 100%; }
+.hcomp span:first-child { border-radius: 5px 0 0 5px; }
+.hcomp span:nth-child(2) { border-radius: 0 5px 5px 0; }
+.hcomp i { position: absolute; top: -5px; bottom: -5px; border: 1.5px solid var(--ink); border-radius: 4px; pointer-events: none; }
+.hce { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; align-content: start; }
+.ce-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.ce-row span { font-size: 0.86rem; color: var(--ink-2); }
+.ce-row b { font: 700 1.15rem var(--f-display); text-align: right; }
+.ce-row em { grid-column: 2; font: 500 0.74rem var(--f-mono); color: var(--muted); font-style: normal; text-align: right; }
+@media (max-width: 1100px) { .hchain { grid-template-columns: minmax(0, 1fr); } .harr { height: 14px; width: 2px; justify-self: center; } .harr::after { right: -4px; top: auto; bottom: -2px; border: 5px solid transparent; border-top: 7px solid var(--line-2); border-bottom: 0; } }
+@media (max-width: 520px) { .zrow { grid-template-columns: minmax(0, 1fr); gap: 4px; } .pr-row { grid-template-columns: 7.2em minmax(0, 1fr) 3em; font-size: 0.8rem; } }
+
+@media (max-width: 1020px) {
+  .main { grid-template-columns: minmax(0, 1fr); }
+  aside.controls { position: static; max-height: none; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .top { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .anchor dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wrap { padding-inline: 16px; }
+}
+@media (max-width: 420px) { .kpis { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<section class="mhero night" id="map" aria-label="Live risk map of Macao">
+  <div class="hero-map" id="mapbox">
+    <canvas id="map3d" tabindex="0" role="img" aria-label="3D map of Macao: columns show expected jobs at risk among mapped shops, per 200 metre block"></canvas>
+  </div>
+  <div class="hero-in">
+    <div class="hero-text">
+      <div id="hero-plaque"></div>
+      <div class="eyebrow">Imperial Hackathon HK &amp; Macao 2026 &#xb7; Open Challenge</div>
+      <div class="hero-kicker" id="hero-kicker"></div>
+      <h1>When a tourism shock spreads across Macao's sectors, which SMEs does a subsidised loan actually save?</h1>
+      <p class="lede">The scheme assesses firms one by one. This prototype estimates how a drop in visitors travels through gaming, hotels, restaurants and retail (Diebold&#x2013;Yilmaz connectedness on DSEC data), simulates each SME profile's cash flow with and without the 4% interest subsidy, and ranks profiles by jobs and health burden protected per pataca.</p>
+      <div class="hero-ctl">
+        <div class="hc-top"><label for="hero-shock" class="eyebrow">Try a shock</label><output id="hero-shock-o"></output></div>
+        <input type="range" id="hero-shock" min="-60" max="-5" step="5" value="-25">
+        <div class="hc-sub" id="hero-scen"></div>
+        <div class="seg" id="map-metric" role="group" aria-label="Column height">
+          <button type="button" data-m="risk" aria-pressed="true">Jobs at risk</button>
+          <button type="button" data-m="save" aria-pressed="false">Jobs the subsidy keeps</button>
+        </div>
+      </div>
+      <div class="hero-stats" id="hero-stats" aria-live="polite"></div>
+    </div>
+    <div class="hero-mid">
+      <div class="map-ui">
+        <button type="button" id="map-orbit" aria-pressed="false">Orbit</button>
+        <button type="button" id="map-zin" aria-label="Zoom in">+</button>
+        <button type="button" id="map-zout" aria-label="Zoom out">&#x2212;</button>
+        <button type="button" id="map-reset">Reset view</button>
+        <span class="map-hint">Drag to rotate &#xb7; shift-drag to pan &#xb7; click, then scroll to zoom</span>
+      </div>
+    </div>
+    <div class="hero-side">
+      <div class="map-legend" id="map-legend"></div>
+      <div id="map-side"></div>
+    </div>
+  </div>
+</section>
+<div class="wrap">
+  <p class="note map-note" id="map-note"></p>
+    <div class="anchor strip" aria-label="Policy anchor">
+      <svg class="tileorn" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="20" cy="11" r="5.2" fill="currentColor"/><circle cx="20" cy="29" r="5.2" fill="currentColor"/><circle cx="11" cy="20" r="5.2" fill="currentColor"/><circle cx="29" cy="20" r="5.2" fill="currentColor"/><circle cx="20" cy="20" r="3.2" fill="var(--panel)" stroke="currentColor" stroke-width="1.6"/><path d="M1 9 A8 8 0 0 0 9 1 M31 1 A8 8 0 0 0 39 9 M39 31 A8 8 0 0 0 31 39 M9 39 A8 8 0 0 0 1 31" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div class="eyebrow">Policy anchor &#xb7; SME Bank Loan Interest Subsidy Scheme</div>
+      <dl>
+        <div><dt>Subsidy</dt><dd>4% p.a.</dd></div>
+        <div><dt>Loan cap</dt><dd>MOP 5m</dd></div>
+        <div><dt>Term</dt><dd>&#x2264; 3 years</dd></div>
+        <div><dt>Firm size</dt><dd>&#x2264; 100 staff</dd></div>
+        <div><dt>Pool</dt><dd>MOP 10bn</dd></div>
+        <div><dt>Status</dt><dd>Continued</dd></div>
+      </dl>
+      <p class="note">Pledged to continue in the 2026 Policy Address (18 Nov 2025). These parameters are the model's defaults; change them in the panel to test redesigns.</p>
+    </div>
+  <div class="calcada" aria-hidden="true"></div>
+  <nav class="jump" aria-label="Sections">
+    <a href="#map">1 Risk map</a><a href="#propagation">2 Shock propagation</a><a href="#hump">3 Who gains most</a><a href="#ranking">4 Priority ranking</a><a href="#design">5 Rate design</a><a href="#applicant">6 Applicant check</a><a href="#health">7 Health</a><a href="#validation">8 Validation</a><a href="#method">Method &amp; sources</a><a href="#results">Results at a glance</a>
+  </nav>
+
+  <div class="main">
+    <aside class="controls" aria-label="Scenario controls">
+      <div id="ctl-plaque"></div>
+      <div class="cgroup">
+        <div class="eyebrow">Tourism shock scenario</div>
+        <div class="field"><label for="origin">Shock starts in</label>
+          <select id="origin"><option value="visitors">Visitor arrivals</option><option value="gaming_ggr">Gross gaming revenue</option><option value="hotel_guests">Hotel guests</option></select></div>
+        <div class="field"><label for="shock">Drop below normal <output id="shock-o"></output></label><input id="shock" type="range" min="-60" max="-5" step="5" value="-25"></div>
+        <div class="field"><label for="dur">Lasts <output id="dur-o"></output></label><input id="dur" type="range" min="1" max="8" step="1" value="4"></div>
+        <div class="field"><label for="rec">Then recovers over <output id="rec-o"></output></label><input id="rec" type="range" min="0" max="4" step="1" value="4"></div>
+        <label class="check"><input id="noise" type="checkbox" checked> Include normal-times demand uncertainty</label>
+      </div>
+      <div class="cgroup">
+        <div class="eyebrow">Loan &amp; subsidy design</div>
+        <div class="field"><label for="sub">Interest subsidy <output id="sub-o"></output></label><input id="sub" type="range" min="0" max="6" step="0.5" value="4"></div>
+        <div class="field"><label for="cap">Loan cap <output id="cap-o"></output></label><input id="cap" type="range" min="1" max="10" step="0.5" value="5"></div>
+        <div class="field"><label for="loanm">Credit drawn (months of fixed costs) <output id="loanm-o"></output></label><input id="loanm" type="range" min="3" max="18" step="1" value="11"></div>
+        <div class="field"><label for="spread">Bank rate = prime 5.25% + <output id="spread-o"></output></label><input id="spread" type="range" min="0" max="3" step="0.25" value="1"></div>
+      </div>
+      <div class="cgroup">
+        <div class="eyebrow">Rank profiles by</div>
+        <div class="seg" role="group" aria-label="Ranking metric">
+          <button type="button" data-metric="jobsPerMOPm" aria-pressed="true">Jobs / MOP</button>
+          <button type="button" data-metric="dalyPerMOPm" aria-pressed="false">DALYs / MOP</button>
+          <button type="button" data-metric="delta" aria-pressed="false">Survival gain</button>
+        </div>
+      </div>
+      <details class="cgroup">
+        <summary>Health assumptions</summary>
+        <div class="field"><label for="dw">Depression severity (GBD weight)</label>
+          <select id="dw"><option value="0.145">Mild episode &#xb7; 0.145</option><option value="0.396" selected>Moderate episode &#xb7; 0.396</option><option value="0.658">Severe episode &#xb7; 0.658</option></select></div>
+        <div class="field"><label for="pdur">Episode length <output id="pdur-o"></output></label><input id="pdur" type="range" min="0.25" max="2" step="0.25" value="0.5"></div>
+        <div class="field"><label for="mrr">Excess mortality after job loss <output id="mrr-o"></output></label><input id="mrr" type="range" min="0" max="1" step="0.25" value="0.5"></div>
+      </details>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+      <button type="button" class="linkbtn" id="reset">Reset to scheme defaults</button>
+    </aside>
+
+    <div class="content">
+      <div class="kpis" id="results" aria-label="Headline results">
+        <div class="kpi hero"><span class="eyebrow">Value for money</span><div class="v" id="k-ratio">&#x2013;</div><div class="d" id="k-ratio-d"></div></div>
+        <div class="kpi"><span class="eyebrow">Jobs protected</span><div class="v" id="k-jobs">&#x2013;</div><div class="d" id="k-jobs-d"></div></div>
+        <div class="kpi"><span class="eyebrow">Health burden avoided</span><div class="v" id="k-daly">&#x2013;</div><div class="d" id="k-daly-d"></div></div>
+        <div class="kpi"><span class="eyebrow">Missed by firm-by-firm view</span><div class="v" id="k-shift">&#x2013;</div><div class="d" id="k-shift-d"></div></div>
+      </div>
+
+
+      <section class="card" id="propagation">
+        <div class="head"><div><h2>How the shock propagates</h2>
+          <p class="sub" style="margin-top:6px">The scenario sets one series (left). The estimated network decides how hard every other series is hit, quarter by quarter. Each thread is about 1.5% of revenue lost; the right-hand lines show each series' whole path.</p></div></div>
+        <div class="pr-ctl"><button type="button" class="playbtn" id="pr-play">&#x25b6; Play</button><input type="range" id="pr-q" min="1" max="8" value="1" aria-label="Quarter after the shock"><span class="pr-qlab" id="pr-qlab" aria-live="polite"></span></div>
+        <div class="chart pr-flow" id="pr-flow"></div>
+        <h3 style="margin-top:6px">The whole path, quarter by quarter</h3>
+        <div class="chart" id="pr-ridge"></div>
+        <p class="note">Threads show the model's estimated response of each series to the scenario, combining direct exposure to visitors and spillovers through the network. They are not literal money flows between sectors.</p>
+        <details class="pr-table"><summary>Show the quarter-by-quarter numbers</summary>
+        <div class="tablewrap" style="border:0;margin-top:10px"><table class="heat" id="heat"></table></div></details>
+        <p class="note">Firm-by-firm assessment sees none of these rows: it evaluates each applicant on current accounts. That gap is what the "Missed by firm-by-firm view" figure measures.</p>
+      </section>
+
+      <section class="card" id="network">
+        <div class="head"><div><h2>Sector connectedness</h2>
+          <p class="sub" style="margin-top:6px">Diebold&#x2013;Yilmaz (2012) generalised variance decomposition, VAR(<span id="n-p"></span>) on year-on-year growth, <span id="n-sample"></span>, 8-quarter horizon.</p></div>
+          <span class="pill acc" id="n-total"></span></div>
+        <div class="grid2">
+          <div class="chart" id="net-chart" aria-label="Net pairwise spillover network"></div>
+          <div class="chart" id="roll-chart" aria-label="Rolling total connectedness"></div>
+        </div>
+        <h3>Full spillover table</h3>
+        <p class="note">Each row is the series receiving, each column the series sending: the share (%) of a row's 8-quarter forecast-error variance due to shocks in the column. Rows sum to 100. "From others" and "To others" are the row and column totals excluding the diagonal; the corner is total connectedness.</p>
+        <div class="tablewrap"><table class="heat dym" id="dy-matrix"></table></div>
+        <h3>Transmitters and receivers, with robustness</h3>
+        <div class="tablewrap"><table id="dy-table"></table></div>
+        <div class="callout"><b>Read the direction with care.</b> Total connectedness is high in every specification (<span id="n-rob"></span>). Which sector is a net transmitter is not stable: several signs flip between the full sample and the pre-COVID sample. The ranking therefore relies on the impulse responses, not on the transmitter/receiver labels.</div>
+      </section>
+
+      <section class="card" id="hump">
+        <div class="head"><div><h2>Who gains most: the middle, not the weakest</h2>
+          <p class="sub" style="margin-top:6px">Each bubble is an SME profile. Its tail starts at the chance of surviving without the subsidy and ends where the subsidy takes it; its height is how many jobs it saves per MOP 1m. Long tails high up sit in the middle band. Firms that are safe anyway barely move, yet a flat rate spends most of its money on them.</p></div></div>
+        <div class="legend" id="hump-legend"></div>
+        <div class="chart" id="hump-chart"></div>
+        <ol class="hnotes" id="hump-notes"></ol>
+        <div class="zones" id="hump-zones"></div>
+      </section>
+
+      <section class="card" id="ranking">
+        <div class="head">
+          <div><h2>Which SME profiles to prioritise</h2>
+          <p class="sub" style="margin-top:6px">216 SME profiles (sector &#xd7; staff &#xd7; cash buffer &#xd7; pre-shock margin), all eligible under the scheme, ranked by the metric chosen in the scenario panel. Survival = cash never runs out over 24 months. Gains compare the same firm, same random draws, with and without the subsidy. Click a bar to open that profile in the applicant check.</p></div>
+        </div>
+        <div class="filters" id="secfilter" role="group" aria-label="Filter by sector group"></div>
+        <h3>The eight highest-ranked profile types</h3>
+        <div class="chart" id="rank-iso"></div>
+        <h3>Priority seats by sector</h3>
+        <div class="chart" id="rank-dots"></div>
+        <div class="legend" id="rank-strip-key"></div>
+        <h3 style="margin-top:4px">Top profiles in detail</h3>
+        <div class="tablewrap"><table id="rank-table"><thead><tr>
+          <th scope="col">Rank</th><th scope="col" class="l">Sector</th><th scope="col">Staff</th><th scope="col">Cash buffer</th><th scope="col">Margin</th>
+          <th scope="col">Survive &#xb7; no subsidy</th><th scope="col">With subsidy</th><th scope="col">Gain</th><th scope="col" id="th-metric">Jobs per MOP 1m</th><th scope="col">Rank if firm-by-firm</th>
+        </tr></thead><tbody></tbody></table></div>
+        <p class="note">Last column: where the same profile would rank if each firm were assessed on current accounts only. &#x25b2; means modelling contagion moves it up the list; &#x25bc; means down.</p>
+        <button type="button" class="linkbtn" id="more">Show all profiles</button>
+      </section>
+
+      <section class="card" id="design">
+        <div class="head"><div><h2>Same cost, better rates: a two-tier subsidy</h2>
+          <p class="sub" style="margin-top:6px">The scheme is not short of money: about MOP 4.5bn of its MOP 10bn loan cap had been used by 31 March 2026, and applications were extended to 31 December 2026. So the ranking is not for rationing. It tells the government what rate to offer whom. Each row compares a two-tier design with the flat 4% at no higher total cost.</p></div></div>
+        <div class="tablewrap"><table class="src" id="tier-table"></table></div>
+        <p class="note" id="tier-note"></p>
+      </section>
+
+      <section class="card" id="applicant">
+        <div class="head"><div><h2>Applicant check</h2>
+          <p class="sub" style="margin-top:6px">Three answers on the application form place a firm in a tier: its sector, its staff, and how many days its cash would cover normal outgoings. The check runs the same simulation as the ranking, under the scenario set in the scenario panel.</p></div></div>
+        <form class="ap-form" id="ap-form" autocomplete="off">
+          <div class="field"><label for="ap-sector">Sector</label><select id="ap-sector"></select></div>
+          <div class="field"><label for="ap-staff">Staff</label><input id="ap-staff" type="number" min="1" max="100" step="1" value="10" inputmode="numeric"></div>
+          <div class="field"><label for="ap-days">Days of cash</label><input id="ap-days" type="number" min="1" max="365" step="1" value="27" inputmode="numeric"></div>
+          <div class="field"><label for="ap-margin">Margin vs sector</label><select id="ap-margin"><option value="-1">Weaker (a bad year)</option><option value="0" selected>Typical</option><option value="1">Stronger (a good year)</option></select></div>
+        </form>
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="shopi" viewBox="0 0 24 24">
+          <path d="M3.5 3h17l1.5 5H2z" fill="currentColor"/>
+          <path d="M2 8q1.67 2.4 3.33 0q1.67 2.4 3.34 0q1.66 2.4 3.33 0q1.67 2.4 3.33 0q1.67 2.4 3.34 0q1.66 2.4 3.33 0z" fill="currentColor"/>
+          <rect x="4" y="10.5" width="16" height="11" rx="0.6" fill="currentColor" fill-opacity="0.22"/>
+          <rect x="6" y="13" width="5" height="8.5" rx="0.4" fill="currentColor" fill-opacity="0.85"/>
+          <rect x="13" y="13" width="5" height="4.2" rx="0.4" fill="currentColor" fill-opacity="0.55"/>
+          <g style="opacity:var(--sh,0)"><rect x="4" y="10.5" width="16" height="11" fill="currentColor" fill-opacity="0.9"/><path d="M4 13h16M4 15.6h16M4 18.2h16" stroke="var(--panel)" stroke-width="0.9"/></g>
+        </symbol><symbol id="personi" viewBox="0 0 12 24"><circle cx="6" cy="3.6" r="3" fill="currentColor"/><path d="M3 8h6a2 2 0 0 1 2 2v6.5h-2.2V23H6.9v-6H5.1v6H3.2v-6.5H1V10a2 2 0 0 1 2-2z" fill="currentColor"/></symbol></svg>
+        <div class="ap-wafhead"><div class="eyebrow">Out of 100 firms like this one, over 24 months</div>
+          <div class="seg" id="ap-arm" role="group" aria-label="Subsidy shown"><button type="button" data-arm="flat" aria-pressed="true">Flat</button><button type="button" data-arm="full" aria-pressed="false">All interest</button></div></div>
+        <div class="ap-stats" id="ap-key" aria-live="polite"></div>
+        <div class="ap-waffle" id="ap-waffle" role="img" aria-label="100 shopfronts: open anyway, saved by the subsidy, closed"></div>
+        <div class="ap-peoplewrap"><div class="eyebrow" id="ap-people-h"></div><div class="ap-people" id="ap-people" role="img"></div><div class="note" id="ap-people-n"></div></div>
+        <div class="ap-out">
+          <div class="chart" id="ap-curve"></div>
+          <div class="ap-tier" id="ap-tier" aria-live="polite"></div>
+        </div>
+        <p class="note" id="ap-note"></p>
+      </section>
+
+      <section class="card" id="health">
+        <div class="head"><div><h2>Health module: SME failure as a health event</h2>
+          <p class="sub" style="margin-top:6px">Every job lost to SME failure carries an expected health burden, measured in disability-adjusted life years (DALYs). The chain below follows MOP 10m of subsidy through the current scenario to the health burden it avoids, targeted versus spread evenly.</p></div></div>
+        <div class="hchain" id="h-chain"></div>
+        <div class="grid2">
+          <div style="display:grid;gap:14px;align-content:start"><div class="tablewrap"><table id="health-table"></table></div><div id="h-comp" style="display:grid;gap:8px"></div></div>
+          <div class="hce" id="h-ce"></div>
+        </div>
+        <div class="note" id="health-note"></div>
+      </section>
+
+      <section class="card" id="validation">
+        <div class="head"><div><h2>Does it hold on Macao's own data?</h2>
+          <p class="sub" style="margin-top:6px">Three checks against what actually happened in Macao, so the model is not taken on trust.</p></div></div>
+        <h3>1. COVID back-test: estimated only on data before 2020</h3>
+        <p class="note">Each sector's exposure to a visitor shock was estimated on 2011&#x2013;2019 only, then applied to the actual 2020&#x2013;2022 visitor collapse (visitors averaged <b id="v-vis"></b> vs 2019).</p>
+        <div class="tablewrap"><table class="src" id="val-covid"></table></div>
+        <p class="note" id="val-covid-note"></p>
+        <h3 style="margin-top:6px">2. Today's structure, measured directly</h3>
+        <p class="note">Because older data may not describe today's Macao, retail exposure was re-measured from DSEC 2025 visitor spending by category (spending per visitor &#xd7; arrivals &#xf7; retail sales of that category).</p>
+        <div class="tablewrap"><table class="src" id="val-now"></table></div>
+        <p class="note" id="val-now-note"></p>
+        <h3 style="margin-top:6px">3. Forecasting 2025&#x2013;2026 out of sample</h3>
+        <p class="note" id="val-recent-note"></p>
+      </section>
+
+      <section class="card" id="method">
+        <div class="head"><div><h2>Method &amp; sources</h2>
+          <p class="sub" style="margin-top:6px">Every number in this prototype traces to a row below. Each parameter states its basis: official data, published evidence, or a value derived from them. The sensitivity table shows how much each modelling choice moves the headline results.</p></div></div>
+        <h3>Pipeline</h3>
+        <ol class="steps">
+          <li><b>Data.</b> Ten quarterly series from the DSEC Time Series Database, 2010Q1&#x2013;<span class="m-last"></span>, retrieved <span id="m-ret"></span>. Year-on-year log growth, winsorised at &#xb1;1.0 log points so the 2020&#x2013;23 collapse and rebound do not dominate.</li>
+          <li><b>Connectedness.</b> VAR with lag chosen by BIC; generalised forecast-error variance decomposition (Pesaran&#x2013;Shin), row-normalised as in Diebold &amp; Yilmaz (2012). Rolling <span id="m-roll"></span>-quarter windows for the time profile.</li>
+          <li><b>Shock propagation.</b> The origin's level is fixed to the scenario path; the shocks needed to produce it are solved quarter by quarter from the generalised impulse responses; every other sector's level path follows the network.</li>
+          <li><b>Cash-flow simulation.</b> Monthly, 24 months, <span id="m-paths"></span> paths. Revenue = normal revenue &#xd7; sector path &#xd7; normal-times sector uncertainty (bootstrapped VAR residuals, COVID quarters excluded). Costs from DSEC 2024 surveys. Each firm starts with its cash buffer and carries a drawn credit line (interest-only). Failure = cash below zero.</li>
+          <li><b>Subsidy.</b> The same firm, with the same random draws, is run twice: paying the bank rate, and paying the bank rate minus min(4%, bank rate) while it survives. Expected subsidy cost is the denominator of every per-pataca figure.</li>
+          <li><b>Targeting comparison.</b> Untargeted = total jobs saved &#xf7; total subsidy across all profiles. Targeted = fund profiles in order of jobs per pataca until 25% of that budget is spent.</li>
+        </ol>
+        <h3 style="margin-top:6px">Official data series</h3>
+        <div class="tablewrap"><table class="src" id="src-data"></table></div>
+        <h3 style="margin-top:6px">Calibration from DSEC annual surveys (2024)</h3>
+        <div class="tablewrap"><table class="src" id="src-cal"></table></div>
+        <h3 style="margin-top:6px">Policy, finance, health evidence and assumptions</h3>
+        <div class="tablewrap"><table class="src" id="src-other"></table></div>
+        <h3 style="margin-top:6px">Sensitivity of the headline results</h3>
+        <div class="tablewrap"><table class="src" id="src-sens"></table></div>
+        <h3 style="margin-top:6px">Limitations</h3>
+        <ul class="lim">
+          <li>The profile grid is equal-weighted. DSEC publishes establishment counts for retail and restaurants overall, not by retail sub-type, so results are per profile, not per Macao firm.</li>
+          <li>All retail sub-sectors share the aggregate retail cost structure; sector differences come from demand exposure. Restaurant costs come from the restaurant survey.</li>
+          <li>The neighbourhood-restaurant visitor share is pinned to the industry-wide tourism ratio; DSEC does not publish it by restaurant type. Supermarket sales stand in for local demand.</li>
+          <li>Job-loss health effects come from Korean panel data and international meta-analyses, not Macao itself; Macao data enter through mortality and life expectancy. Cash-buffer profiles use US bank-account data because no Macao or Hong Kong distribution is published; halving or doubling them keeps the targeting gain between 2.9x and 3.7x.</li>
+          <li>With no shock, the profile grid fails at a higher rate than Macao's SME loan delinquency ratio (see validation row), mainly because restaurant profiles carry the sector's negative 2024 margin. Results lean pessimistic for restaurants.</li>
+          <li>The model is built to stress-test shocks. Out of sample in 2025&#x2013;2026 it did not forecast ordinary quarter-to-quarter growth better than a no-change rule (see Validation).</li>
+          <li>The subsidy is modelled as interest relief only. If the subsidy also decides whether a firm borrows at all, the true gains are larger.</li>
+          <li>Restaurant establishment counts jump between 2019 and 2020 in the DSEC survey; only 2024 ratios are used, not counts.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</div>
+<footer class="foot">
+  <div class="calcada thin" aria-hidden="true"></div>
+  <div class="wrap foot-in" style="padding-top:14px"><span>Prototype for the Imperial Hackathon Hong Kong &amp; Macao 2026 &#xb7; Open Challenge</span><span>Data: DSEC, AMCM, Macao SAR Government; map &#xa9; OpenStreetMap contributors (ODbL)</span></div>
+</footer>
+<nav class="tourbar" id="tourbar" aria-label="Story steps" hidden></nav>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+/*__SIM__*/
+</script>
+<script>
+const CONN = /*__CONN__*/null;
+const CAL = /*__CAL__*/null;
+const META = /*__META__*/null;
+
+const $ = (s, r = document) => r.querySelector(s);
+const NS = "http://www.w3.org/2000/svg";
+const svgEl = (t, a = {}) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const pct = (x, d = 0) => (x * 100).toFixed(d) + "%";
+const fmt = (x, d = 2) => Number.isFinite(x) ? x.toFixed(d) : "\u2013";
+const GROUP = { restaurant_tourist: 0, restaurant_local: 0, jewellery_watches: 1, leather_goods: 1, adult_clothing: 1, chinese_food_products: 1, pharmacies: 2, supermarkets: 2 };
+const GROUPS = [
+  { name: "Restaurants", color: "var(--g1)", shape: "circle" },
+  { name: "Tourist-facing retail", color: "var(--g2)", shape: "square" },
+  { name: "Neighbourhood retail", color: "var(--g3)", shape: "triangle" },
+];
+const VARLAB = META.varLabels;
+
+const tip = $("#tip");
+function showTip(ev, html) { tip.innerHTML = html; tip.hidden = false; const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + 14, y = ev.clientY + 14; if (x + w > innerWidth - 8) x = ev.clientX - w - 14; if (y + h > innerHeight - 8) y = ev.clientY - h - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip() { tip.hidden = true; }
+
+const DEF = { origin: "visitors", shock: -25, dur: 4, rec: 4, noise: true, sub: 4, cap: 5, loanm: 11, spread: 1, dw: "0.396", pdur: 0.5, mrr: 0.5 };
+const state = { metric: "jobsPerMOPm", group: -1, showAll: false };
+let RES = null;
+
+function readControls() {
+  return {
+    origin: $("#origin").value, shock: +$("#shock").value, dur: +$("#dur").value, rec: +$("#rec").value, noise: $("#noise").checked,
+    sub: +$("#sub").value, cap: +$("#cap").value, loanm: +$("#loanm").value, spread: +$("#spread").value,
+    dw: $("#dw").value, pdur: +$("#pdur").value, mrr: +$("#mrr").value,
+  };
+}
+function writeOutputs(c) {
+  $("#shock-o").textContent = c.shock + "%";
+  $("#hero-shock").value = c.shock;
+  $("#hero-shock-o").textContent = META.varShort[c.origin] + " " + c.shock + "%";
+  $("#hero-scen").textContent = `for ${c.dur} quarter${c.dur > 1 ? "s" : ""}, then back to normal over ${c.rec} \u00b7 more settings in the scenario panel below`;
+  $("#dur-o").textContent = c.dur + (c.dur === 1 ? " quarter" : " quarters");
+  $("#rec-o").textContent = c.rec === 0 ? "immediately" : c.rec + (c.rec === 1 ? " quarter" : " quarters");
+  $("#sub-o").textContent = c.sub.toFixed(1) + "% p.a.";
+  $("#cap-o").textContent = "MOP " + c.cap + "m";
+  $("#loanm-o").textContent = c.loanm + " months";
+  $("#spread-o").textContent = c.spread.toFixed(2) + "%";
+  $("#pdur-o").textContent = c.pdur + " yr";
+  $("#mrr-o").textContent = "+" + Math.round(c.mrr * 100) + "%";
+}
+
+function compute() {
+  const c = readControls(); writeOutputs(c);
+  const params = { subsidy_rate: c.sub / 100, loan_cap: c.cap * 1e6, loan_months_of_fixed_cost: c.loanm, loan_spread: c.spread / 100,
+                   dw_depression: +c.dw, psych_duration_years: c.pdur, excess_mortality_rr: c.mrr };
+  const base = { origin: c.origin, shockPct: c.shock, duration: c.dur, recovery: c.rec, noise: c.noise, params };
+  const net = SMESim.simulate(CONN, CAL, base);
+  const firm = SMESim.simulate(CONN, CAL, Object.assign({}, base, { view: "firm" }));
+  RES = { c, net, firm, base };
+  renderAll();
+}
+let pending = 0;
+function schedule() { $("#status").textContent = "Updating\u2026"; clearTimeout(pending);
+  pending = setTimeout(() => { const t = performance.now(); compute(); $("#status").textContent = "Simulated " + RES.net.nPaths + " paths \u00d7 216 profiles \u00d7 2 arms in " + Math.round(performance.now() - t) + " ms"; }, 60); }
+
+function rankOf(list, key) { const s = list.map((p, i) => [p[key], i]).sort((a, b) => b[0] - a[0]); const r = new Array(list.length); s.forEach(([, i], k) => r[i] = k + 1); return r; }
+
+function renderAll() { renderKPIs(); renderMap(); renderTable(); renderHump(); renderHeat(); renderHealth(); renderApplicant(); renderTour(); }
+
+function renderKPIs() {
+  const { net, firm } = RES, ps = net.profiles;
+  const al = SMESim.allocation(ps, "jobsPerMOPm", 0.25);
+  $("#k-ratio").innerHTML = al.ratio ? al.ratio.toFixed(1) + "<small>\u00d7</small>" : "\u2013";
+  $("#k-ratio-d").textContent = "more jobs per pataca from the best-ranked profiles (the first quarter of subsidy spending) than from the average eligible applicant.";
+  $("#k-jobs").innerHTML = fmt(al.targeted, 1) + "<small> per MOP 1m</small>";
+  $("#k-jobs-d").textContent = "jobs kept by targeted subsidy, vs " + fmt(al.untargeted, 1) + " untargeted.";
+  const dalyT = al.targeted * net.daly.total;
+  $("#k-daly").innerHTML = fmt(dalyT * 10, 2) + "<small> DALYs per MOP 10m</small>";
+  $("#k-daly-d").textContent = fmt(net.daly.total, 3) + " DALYs avoided per job kept (depression + excess mortality).";
+  const key = state.metric, rn = rankOf(ps, key), rf = rankOf(firm.profiles, key);
+  let overlap = 0; for (let i = 0; i < ps.length; i++) if (rn[i] <= 20 && rf[i] <= 20) overlap++;
+  $("#k-shift").innerHTML = (20 - overlap) + "<small> of top 20</small>";
+  $("#k-shift-d").textContent = "priority profiles that a firm-by-firm assessment of current accounts would rank outside its own top 20.";
+}
+
+function renderFilters() {
+  const box = $("#secfilter"); box.innerHTML = "";
+  const mk = (label, g, color) => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.setAttribute("aria-pressed", state.group === g);
+    b.innerHTML = (color ? `<span class="sw" style="background:${color};margin:0"></span>` : "") + label;
+    b.onclick = () => { state.group = g; renderFilters(); renderTable(); }; box.appendChild(b); };
+  mk("All sectors", -1); GROUPS.forEach((g, i) => mk(g.name, i, g.color));
+}
+
+function renderTable() {
+  const { net, firm } = RES, key = state.metric;
+  const rn = rankOf(net.profiles, key), rf = rankOf(firm.profiles, key);
+  let rows = net.profiles.map((p, i) => ({ p, r: rn[i], rf: rf[i] })).sort((a, b) => a.r - b.r);
+  if (state.group >= 0) rows = rows.filter(x => GROUP[x.p.sector] === state.group);
+  const shown = state.showAll ? rows : rows.slice(0, 20);
+  const maxV = Math.max(...net.profiles.map(p => p[key]), 1e-9);
+  $("#th-metric").textContent = key === "jobsPerMOPm" ? "Jobs per MOP 1m" : key === "dalyPerMOPm" ? "DALYs per MOP 1m" : "Survival gain";
+  const tb = $("#rank-table tbody"); tb.innerHTML = "";
+  for (const { p, r, rf: f } of shown) {
+    const v = p[key], g = GROUPS[GROUP[p.sector]];
+    const mv = key === "delta" ? (v * 100).toFixed(1) + " pp" : fmt(v, key === "dalyPerMOPm" ? 3 : 2);
+    const move = f - r;
+    const mvTxt = move > 0 ? `${f} <span class="pill good" title="Modelling contagion moves this profile up ${move} places">\u25b2 ${move}</span>`
+      : move < 0 ? `${f} <span class="pill warn" title="Modelling contagion moves this profile down ${-move} places">\u25bc ${-move}</span>` : `${f} <span class="muted">same</span>`;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r}</td><td class="l"><span class="sw" style="background:${g.color}"></span>${p.sectorName}</td><td>${p.employees}</td><td>${p.buffer} days</td>
+      <td>${(p.margin * 100).toFixed(1)}%</td><td>${pct(p.p0, 1)}</td><td>${pct(p.p1, 1)}</td><td>+${(p.delta * 100).toFixed(1)} pp</td>
+      <td>${mv}<span class="bar" style="width:${Math.max(0, v / maxV * 60).toFixed(1)}px"></span></td><td>${mvTxt}</td>`;
+    tb.appendChild(tr);
+  }
+  $("#more").textContent = state.showAll ? "Show top 20" : `Show all ${rows.length} profiles`;
+  renderStrip();
+}
+
+/* ---------- priority ranking: isometric podium + priority seats by sector ---------- */
+function shade(hex, f) { const n = parseInt(hex.slice(1), 16), c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(v * f))));
+  return "#" + c.map(v => v.toString(16).padStart(2, "0")).join(""); }
+function groupHex(g) { const v = getComputedStyle(document.documentElement).getPropertyValue(["--g1", "--g2", "--g3"][g]).trim(); return v || ["#e8692d", "#5f93d3", "#2f6b45"][g]; }
+function renderStrip() {
+  const { net, firm } = RES, key = state.metric, ps = net.profiles;
+  const rn = rankOf(ps, key), rf = rankOf(firm.profiles, key);
+  const vals = ps.map(p => p[key]).sort((a, b) => b - a), thr = vals[Math.round(0.25 * vals.length) - 1];
+  const unit = key === "jobsPerMOPm" ? "jobs per MOP 1m" : key === "dalyPerMOPm" ? "DALYs per MOP 1m" : "pp survival gain";
+  const fmtV = v => key === "delta" ? (v * 100).toFixed(1) : key === "dalyPerMOPm" ? v.toFixed(3) : v.toFixed(1);
+  // merge profiles that differ only in staff and score the same (the per-pataca score does not depend on size)
+  const order = ps.map((p, i) => i).sort((a, b) => rn[a] - rn[b]), types = [];
+  for (const i of order) {
+    const p = ps[i], t = types.find(t => t.p.sector === p.sector && t.p.buffer === p.buffer && t.p.marginShift === p.marginShift && Math.abs(t.p[key] - p[key]) < 1e-9);
+    if (t) { t.staff.push(p.employees); t.missed = t.missed || (rn[i] <= 20 && rf[i] > 20); } else types.push({ p, i, rank: rn[i], staff: [p.employees], missed: rn[i] <= 20 && rf[i] > 20 });
+    if (types.length > 8) break;
+  }
+  const top = types.slice(0, 8);
+  // --- isometric bars ---
+  const box = $("#rank-iso"), narrow = box.clientWidth < 640, n = top.length;
+  const W = narrow ? 400 : 900, H = narrow ? 400 : 420, gap = narrow ? 46 : 104, bw = narrow ? 24 : 46, dx = narrow ? 12 : 22, dy = narrow ? -7 : -13;
+  const base = H - (narrow ? 70 : 74), x0 = narrow ? 18 : 40, hmax = narrow ? 210 : 220, mx = top[0].p[key];
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "The eight highest-ranked SME profile types as isometric bars" });
+  const st = (x, y, txt, extra = {}) => { const t = svgEl("text", Object.assign({ x, y }, extra)); t.textContent = txt; s.appendChild(t); return t; };
+  // floor
+  const fx1 = x0 + (n - 1) * gap + bw + dx + 14;
+  s.appendChild(svgEl("path", { d: `M${x0 - 14},${base + 8} L${fx1},${base + 8} L${fx1 + dx * 1.6},${base + 8 + dy * 1.6} L${x0 - 14 + dx * 1.6},${base + 8 + dy * 1.6} Z`, fill: "var(--line)" }));
+  top.forEach((t, k) => {
+    const p = t.p, gi = GROUP[p.sector], col = groupHex(gi), h = Math.max(6, p[key] / mx * hmax), x = x0 + k * gap, yT = base - h;
+    const g = svgEl("g", {}); g.style.cursor = "pointer";
+    g.appendChild(svgEl("path", { d: `M${x + bw},${base} L${x + bw + dx},${base + dy} L${x + bw + dx},${yT + dy} L${x + bw},${yT} Z`, fill: "#1c1b18" }));
+    g.appendChild(svgEl("path", { d: `M${x},${yT} L${x + bw},${yT} L${x + bw + dx},${yT + dy} L${x + dx},${yT + dy} Z`, fill: shade(col, 1.25) }));
+    g.appendChild(svgEl("rect", { x, y: yT, width: bw, height: h, fill: col }));
+    if (t.missed) g.appendChild(svgEl("rect", { x: x + 3, y: yT + 3, width: bw - 6, height: Math.min(18, h - 6), fill: "none", stroke: "#fff", "stroke-width": 1.4, "stroke-dasharray": "3 2" }));
+    // rank on the face
+    const rt = svgEl("text", { x: x + bw / 2, y: base - 8, "text-anchor": "middle", class: "iso-rank" }); rt.textContent = "#" + t.rank; g.appendChild(rt);
+    s.appendChild(g);
+    // skewed label plate above the bar, in the plane of the side face
+    const plate = svgEl("g", { transform: `translate(${x + 2},${yT + dy - 12}) skewY(-30)` });
+    plate.appendChild(svgEl("line", { x1: 0, x2: 0, y1: -40, y2: 4, stroke: "var(--ink)", "stroke-width": 2.2 }));
+    const v = svgEl("text", { x: 6, y: 0, class: "iso-val", style: narrow ? "font-size:16px" : "" }); v.textContent = fmtV(p[key]); plate.appendChild(v);
+    if (!narrow) { const l = svgEl("text", { x: 7, y: -28, class: "iso-lab" }); l.textContent = p.sectorName.replace("Restaurant (", "").replace(")", "").replace(" (Chinese food products)", "").toUpperCase(); plate.appendChild(l); }
+    s.appendChild(plate);
+    const html = `<b>#${t.rank} \u00b7 ${p.sectorName}</b><br>${t.staff.join(" or ")} staff \u00b7 ${p.buffer}-day cash buffer \u00b7 margin ${(p.margin * 100).toFixed(1)}%<br>Survive ${pct(p.p0, 1)} \u2192 ${pct(p.p1, 1)}<br>${fmtV(p[key])} ${unit}${t.missed ? "<br><b>A firm-by-firm view would rank it outside its top 20</b>" : ""}<br><span style="opacity:.8">Click to open in the applicant check</span>`;
+    g.addEventListener("mousemove", e => showTip(e, html)); g.addEventListener("mouseleave", hideTip);
+    g.addEventListener("click", () => { hideTip(); $("#ap-sector").value = p.sector; $("#ap-staff").value = t.staff[0]; $("#ap-days").value = p.buffer;
+      $("#ap-margin").value = String(Math.sign(p.marginShift)); AP.touched = false; renderApplicant(); $("#applicant").scrollIntoView({ behavior: "smooth", block: "start" }); });
+    // caption under the floor
+    if (!narrow) { st(x + bw / 2 + 4, base + 30, `${p.buffer} days cash`, { "text-anchor": "middle", class: "iso-cap" });
+      st(x + bw / 2 + 4, base + 44, `${p.marginShift < 0 ? "weak" : p.marginShift > 0 ? "strong" : "typical"} margin`, { "text-anchor": "middle", class: "iso-cap2" });
+      st(x + bw / 2 + 4, base + 57, `${t.staff.join(" / ")} staff`, { "text-anchor": "middle", class: "iso-cap2" }); }
+    else st(x + bw / 2 + 4, base + 30, `${p.buffer}d`, { "text-anchor": "middle", class: "iso-cap" });
+  });
+  st(W - 8, 18, unit, { "text-anchor": "end", class: "iso-cap2" });
+  box.innerHTML = ""; box.appendChild(s);
+  // --- priority seats: 27 profiles per sector as a column of dots (filled = priority tier) ---
+  const sb = $("#rank-dots"), nar2 = sb.clientWidth < 640, secs = CAL.sectors;
+  const cw = nar2 ? 46 : 104, W2 = cw * secs.length + 10, r = nar2 ? 4.2 : 6, step = r * 2 + (nar2 ? 2.5 : 4), H2 = 9 * step + (nar2 ? 104 : 104);
+  const s2 = svgEl("svg", { viewBox: `0 0 ${W2} ${H2}`, role: "img", "aria-label": "Profiles in the priority tier, by sector" });
+  const t2 = (x, y, txt, extra = {}) => { const t = svgEl("text", Object.assign({ x, y }, extra)); t.textContent = txt; s2.appendChild(t); return t; };
+  const bottom = 9 * step + 40;
+  secs.forEach((sec, c) => {
+    const idx = ps.map((p, i) => i).filter(i => ps[i].sector === sec.key);
+    const pri = idx.filter(i => ps[i][key] >= thr && ps[i][key] > 0).sort((a, b) => rn[a] - rn[b]), rest = idx.filter(i => !pri.includes(i));
+    const cx = 10 + c * cw + cw / 2, col = groupHex(GROUP[sec.key]), dim = state.group >= 0 && GROUP[sec.key] !== state.group;
+    const g = svgEl("g", { opacity: dim ? 0.2 : 1 }); s2.appendChild(g);
+    [...pri, ...rest].forEach((i, k) => {
+      const row = Math.floor(k / 3), cc = k % 3, x = cx + (cc - 1) * step, y = bottom - row * step;
+      const on = k < pri.length, missed = rn[i] <= 20 && rf[i] > 20, p = ps[i];
+      const d = svgEl("circle", { cx: x, cy: y, r, fill: on ? col : "none", stroke: on ? (missed ? "var(--ink)" : col) : "var(--line-2)", "stroke-width": on && missed ? 1.8 : 1.2 });
+      const html = `<b>${p.sectorName}</b> \u00b7 #${rn[i]}<br>${p.employees} staff \u00b7 ${p.buffer} days cash \u00b7 margin ${(p.margin * 100).toFixed(1)}%<br>${fmtV(p[key])} ${unit}${on ? "<br><b>Priority tier</b>" : ""}`;
+      d.addEventListener("mousemove", e => showTip(e, html)); d.addEventListener("mouseleave", hideTip); g.appendChild(d);
+    });
+    const nt = svgEl("text", { x: cx, y: bottom - 9 * step + 2, "text-anchor": "middle", class: "dot-n", fill: pri.length ? col : "var(--muted)" });
+    nt.textContent = pri.length; g.appendChild(nt);
+    const nm = sec.name.replace(" (Chinese food products)", "").replace("Restaurant (", "Restaurant\n(").split("\n");
+    const SHORT = { restaurant_tourist: "Rest.\u00b7T", restaurant_local: "Rest.\u00b7N", jewellery_watches: "Jewel", leather_goods: "Leather", adult_clothing: "Cloth", chinese_food_products: "Souv.", pharmacies: "Pharm", supermarkets: "Super" };
+    (nar2 ? [SHORT[sec.key]] : nm).forEach((ln, j) => { const t = svgEl("text", { x: cx, y: bottom + 22 + j * 13, "text-anchor": "middle", class: "dot-lab", style: nar2 ? "font-size:9px" : "" }); t.textContent = ln; g.appendChild(t); });
+    if (!nar2) { const z = svgEl("text", { x: cx, y: bottom + 24 + nm.length * 13, "text-anchor": "middle", class: "dot-zh", lang: "zh-Hant" }); z.textContent = META.sectorZh[sec.key]; g.appendChild(z); }
+  });
+  sb.innerHTML = ""; sb.appendChild(s2);
+  const missed = ps.filter((p, i) => rn[i] <= 20 && rf[i] > 20).length;
+  $("#rank-strip-key").innerHTML = `<span>Each dot is one of the 27 profiles in a sector; <b>filled</b> = in the priority tier (top 25% by ${unit}).</span><span><svg width="16" height="14" style="vertical-align:-2px;margin-right:4px"><circle cx="8" cy="7" r="5.5" fill="var(--g1)" stroke="var(--ink)" stroke-width="1.8"/></svg>Dark ring or dashed box: one of the ${missed} top-20 profiles a firm-by-firm view would miss.</span>`;
+}
+
+function shapePath(shape, x, y, r) {
+  if (shape === "circle") return svgEl("circle", { cx: x, cy: y, r });
+  if (shape === "square") return svgEl("rect", { x: x - r * 0.9, y: y - r * 0.9, width: r * 1.8, height: r * 1.8, rx: 1.5 });
+  return svgEl("path", { d: `M${x},${y - r * 1.15} L${x + r * 1.05},${y + r * 0.8} L${x - r * 1.05},${y + r * 0.8} Z` });
+}
+
+/* ---------- who gains most: three zones ---------- */
+const ZONES = [
+  { lo: 0, hi: 0.15, name: "Likely to close anyway", color: "var(--z-low)" },
+  { lo: 0.15, hi: 0.9, name: "In the balance", color: "var(--z-mid)" },
+  { lo: 0.9, hi: 1.0001, name: "Safe without help", color: "var(--z-high)" },
+];
+const priorityThreshold = ps => { const v = ps.map(p => p.jobsPerMOPm).sort((a, b) => b - a); return v[Math.round(0.25 * v.length) - 1]; };
+let HUMP_NOTES = [];
+function renderHump() {
+  const ps = RES.net.profiles, thr = priorityThreshold(ps), box = $("#hump-chart"), narrow = box.clientWidth < 560;
+  const W = narrow ? 400 : 760, H = narrow ? 470 : 450, m = { l: 46, r: narrow ? 10 : 16, t: 40, b: 70 };
+  const lo = 0.1, mxv = Math.max(1, ...ps.map(p => p.jobsPerMOPm)), hi = mxv * 1.5;
+  const bandH = 26, plotB = H - m.b - bandH - 6;
+  const X = v => m.l + Math.min(1, Math.max(0, v)) * (W - m.l - m.r);
+  const Y = v => plotB - (Math.log(v) - Math.log(lo)) / (Math.log(hi) - Math.log(lo)) * (plotB - m.t);
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Each profile's survival without and with the subsidy, against jobs saved per MOP 1m" });
+  const st = (x, y, txt, extra = {}) => { const t = svgEl("text", Object.assign({ x, y, class: "lbl" }, extra)); t.textContent = txt; s.appendChild(t); return t; };
+  // zones by survival without the subsidy
+  ZONES.forEach((z, k) => {
+    s.appendChild(svgEl("rect", { x: X(z.lo), y: m.t - 6, width: X(z.hi) - X(z.lo), height: H - m.b - m.t + 6, fill: z.color, "fill-opacity": 0.07 }));
+    if (k) s.appendChild(svgEl("line", { x1: X(z.lo), x2: X(z.lo), y1: m.t - 6, y2: H - m.b, stroke: z.color, "stroke-dasharray": "3 3", "stroke-opacity": 0.6 }));
+    st((X(z.lo) + X(z.hi)) / 2, m.t - 16, narrow ? ["Close anyway", "In the balance", "Safe"][k] : z.name, { "text-anchor": "middle", class: "zlab", fill: z.color });
+  });
+  // log grid
+  for (const v of [0.1, 0.3, 1, 3, 10, 30]) if (v <= hi) { s.appendChild(svgEl("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--line)" })); st(m.l - 6, Y(v) + 4, String(v), { "text-anchor": "end" }); }
+  for (let v = 0; v <= 1.0001; v += 0.2) st(X(v), H - m.b + 18, Math.round(v * 100) + "%", { "text-anchor": "middle" });
+  st((m.l + W - m.r) / 2, H - m.b + 38, "Chance of surviving 24 months  \u25cb without \u2192 \u25cf with the subsidy", { "text-anchor": "middle" });
+  st(4, m.t - 30, "Jobs saved per MOP 1m (log scale)", { style: "font-weight:600;fill:var(--ink-2)" });
+  // priority tier
+  s.appendChild(svgEl("rect", { x: m.l, y: m.t - 6, width: W - m.l - m.r, height: Y(thr) - m.t + 6, fill: "var(--good)", "fill-opacity": 0.05 }));
+  s.appendChild(svgEl("line", { x1: m.l, x2: W - m.r, y1: Y(thr), y2: Y(thr), stroke: "var(--ink)", "stroke-dasharray": "5 4", "stroke-width": 1.2 }));
+  st(W - m.r - 4, Y(thr) - 6, narrow ? "Priority \u2191" : `Priority tier \u2191 top 25% (\u2265 ${thr.toFixed(1)})`, { "text-anchor": "end", style: "font-weight:600;fill:var(--ink)" });
+  // band for profiles with no measurable gain
+  const yb = H - m.b - bandH / 2 - 2, none = ps.filter(p => !(p.jobsPerMOPm >= lo));
+  s.appendChild(svgEl("rect", { x: m.l, y: yb - bandH / 2, width: W - m.l - m.r, height: bandH, fill: "var(--bg)", rx: 4 }));
+  st(m.l + 6, yb + 4, `No measurable gain \u00b7 ${none.length} profiles`, { style: "font-weight:600" });
+  const R = p => 2.4 + Math.sqrt(p.employees) * 1.3;
+  for (const p of none) { const g = GROUPS[GROUP[p.sector]]; s.appendChild(svgEl("circle", { cx: X(p.p1), cy: yb, r: 2.6, fill: g.color, "fill-opacity": 0.5 })); }
+  // trails: low value first so the leaders sit on top
+  const shown = ps.filter(p => p.jobsPerMOPm >= lo).sort((a, b) => a.jobsPerMOPm - b.jobsPerMOPm);
+  for (const p of shown) {
+    const g = GROUPS[GROUP[p.sector]], pri = p.jobsPerMOPm >= thr, y = Y(p.jobsPerMOPm), x0 = X(p.p0), x1 = X(p.p1), r = R(p);
+    const w0 = 0.5, w1 = r * 0.75;
+    s.appendChild(svgEl("path", { d: `M${x0},${y - w0} L${x1},${y - w1} L${x1},${y + w1} L${x0},${y + w0} Z`, fill: g.color, "fill-opacity": pri ? 0.42 : 0.2 }));
+    s.appendChild(svgEl("circle", { cx: x0, cy: y, r: 2, fill: "var(--panel)", stroke: g.color, "stroke-width": 1.2, "stroke-opacity": pri ? 1 : 0.5 }));
+    const c = svgEl("circle", { cx: x1, cy: y, r, fill: g.color, "fill-opacity": pri ? 0.95 : 0.45, stroke: pri ? "var(--ink)" : "var(--panel)", "stroke-width": pri ? 1.2 : 1 });
+    c.style.cursor = "pointer";
+    const z = ZONES.find(z => p.p0 >= z.lo && p.p0 < z.hi);
+    const html = `<b>${p.sectorName}</b><br>${p.employees} staff \u00b7 ${p.buffer}-day cash buffer \u00b7 margin ${(p.margin * 100).toFixed(1)}%<br>Survive: ${pct(p.p0, 1)} \u2192 ${pct(p.p1, 1)} (+${(p.delta * 100).toFixed(1)} pp)<br>${fmt(p.jobsPerMOPm)} jobs per MOP 1m \u00b7 ${z.name.toLowerCase()}${pri ? "<br><b>Priority tier</b>" : ""}`;
+    c.addEventListener("mousemove", e => showTip(e, html)); c.addEventListener("mouseleave", hideTip);
+    s.appendChild(c);
+  }
+  // annotate the three strongest distinct cases (sector x buffer x margin)
+  const seen = new Set(), notes = [];
+  for (const p of shown.slice().reverse()) { const k = p.sector + p.buffer + p.marginShift; if (seen.has(k)) continue; seen.add(k); notes.push(p); if (notes.length === 3) break; }
+  notes.forEach((p, n) => {
+    const cx = X(p.p1) + R(p) * 0.75, cy = Y(p.jobsPerMOPm) - R(p) * 0.75;
+    s.appendChild(svgEl("circle", { cx, cy, r: 7.5, fill: "var(--ink)" }));
+    st(cx, cy + 3.5, String(n + 1), { "text-anchor": "middle", style: "fill:var(--panel);font-weight:700;font-size:10px" });
+  });
+  HUMP_NOTES = notes;
+  box.innerHTML = ""; box.appendChild(s);
+  $("#hump-legend").innerHTML = GROUPS.map((g, i) => `<span><span class="sw" style="background:${g.color};border-radius:50%"></span>${g.name}</span>`).join("") +
+    `<span>Bubble size = staff \u00b7 tail starts at survival without the subsidy \u00b7 outlined = priority tier</span>`;
+  $("#hump-notes").innerHTML = HUMP_NOTES.map((p, n) => `<li><b>${p.sectorName.replace(" (Chinese food products)", "")}</b>, ${p.buffer} days of cash, ${p.marginShift < 0 ? "weak" : p.marginShift > 0 ? "strong" : "typical"} margin: survival ${Math.round(p.p0 * 100)}% \u2192 ${Math.round(p.p1 * 100)}%, ${fmt(p.jobsPerMOPm, 1)} jobs per MOP 1m</li>`).join("");
+  // where the money goes vs where the jobs come from
+  const tc = ps.reduce((a, p) => a + p.expCost, 0), tj = ps.reduce((a, p) => a + p.jobsSaved, 0);
+  const zs = ZONES.map(z => { const xs = ps.filter(p => p.p0 >= z.lo && p.p0 < z.hi);
+    return { z, n: xs.length, cost: xs.reduce((a, p) => a + p.expCost, 0) / tc, jobs: tj > 0 ? xs.reduce((a, p) => a + p.jobsSaved, 0) / tj : 0 }; });
+  const bar = (label, key) => `<div class="zrow"><span class="zl">${label}</span><div class="zbar">${zs.map(o => `<span style="width:${(o[key] * 100).toFixed(2)}%;background:${o.z.color}" title="${o.z.name}: ${Math.round(o[key] * 100)}%">${o[key] >= 0.07 ? Math.round(o[key] * 100) + "%" : ""}</span>`).join("")}</div></div>`;
+  $("#hump-zones").innerHTML = `<div class="zkey">${zs.map(o => `<span><span class="sw" style="background:${o.z.color}"></span><b>${o.z.name}</b> <span class="muted">(survival ${o.z.lo === 0 ? "below 15%" : o.z.hi > 1 ? "90% or more" : "15\u201390%"}, ${o.n} profiles)</span></span>`).join("")}</div>` +
+    bar("Subsidy money spent", "cost") + bar("Jobs it saves", "jobs") +
+    `<p class="note">Under a flat rate, firms that are <b>safe without help</b> take <b>${Math.round(zs[2].cost * 100)}%</b> of the subsidy money and account for ${Math.round(zs[2].jobs * 100)}% of the jobs saved. Firms <b>in the balance</b> take ${Math.round(zs[1].cost * 100)}% and account for <b>${Math.round(zs[1].jobs * 100)}%</b>. Firms likely to close anyway cost little, because payments stop when they close. Shares cover all 216 profiles at the flat rate in the current scenario.</p>`;
+}
+
+function divColor(x) {
+  // x = log deviation; returns a token mix for a 5-step diverging scale
+  if (x <= -0.15) return "var(--div-neg)"; if (x <= -0.05) return "var(--div-neg-2)";
+  if (x < 0.05) return "var(--div-mid)"; if (x < 0.15) return "var(--div-pos-2)"; return "var(--div-pos)";
+}
+/* ---------- shock propagation: animated quarter by quarter ---------- */
+const PR = { q: 0, timer: 0, played: false };
+function renderHeat() {
+  const L = RES.net.shock, vars = CONN.variables, io = vars.indexOf(RES.c.origin);
+  let h = `<thead><tr><th class="l" scope="col">Series</th>${L.map((_, q) => `<th scope="col" data-q="${q}" style="cursor:pointer">Q${q + 1}</th>`).join("")}</tr></thead><tbody>`;
+  vars.forEach((v, j) => {
+    h += `<tr><th class="l" scope="row" style="font-weight:${j === io ? 700 : 400};color:var(--ink)">${VARLAB[v]}${j === io ? " \u00b7 scenario" : ""}</th>`;
+    for (let q = 0; q < L.length; q++) { const x = L[q][j], pc = (Math.exp(x) - 1) * 100;
+      const strong = Math.abs(x) >= 0.15; h += `<td data-q="${q}" style="background:${divColor(x)};color:${strong ? "var(--panel)" : "var(--ink)"}">${pc > 0 ? "+" : ""}${pc.toFixed(0)}%</td>`; }
+    h += "</tr>";
+  });
+  $("#heat").innerHTML = h + "</tbody>";
+  $("#heat").querySelectorAll("th[data-q]").forEach(th => th.onclick = () => { stopProp(); PR.q = +th.dataset.q; drawProp(); });
+  $("#pr-q").max = L.length;
+  drawProp();
+}
+function drawProp() {
+  const L = RES.net.shock, vars = CONN.variables, io = vars.indexOf(RES.c.origin), q = Math.min(PR.q, L.length - 1);
+  const box = $("#pr-flow"), narrow = box.clientWidth < 640;
+  const W = narrow ? 400 : 900, H = narrow ? 520 : 470;
+  const ox = narrow ? 46 : 130, oy = H / 2, nx = narrow ? 236 : 560, spX = 700, spW = 170;
+  const others = vars.map((v, j) => j).filter(j => j !== io);
+  const pctv = x => Math.exp(x) - 1;
+  let mx = 0.05; L.forEach(r => others.forEach(j => mx = Math.max(mx, Math.abs(pctv(r[j])))));
+  const top = narrow ? 34 : 52, step = (H - top - 26) / (others.length - 1);
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `How the scenario reaches each sector in quarter ${q + 1}` });
+  const defs = svgEl("defs");
+  const rg = svgEl("radialGradient", { id: "pr-glow" }); rg.appendChild(svgEl("stop", { offset: "0%", "stop-color": "#e8692d", "stop-opacity": 0.75 })); rg.appendChild(svgEl("stop", { offset: "100%", "stop-color": "#ff6b7d", "stop-opacity": 0 }));
+  defs.appendChild(rg); s.appendChild(defs);
+  const col = v => v < 0 ? `rgb(${ramp(Math.min(1, 0.35 + -v / mx * 0.65)).map(Math.round).join(",")})` : "#62a8ff";
+  const vo = pctv(L[q][io]);
+  // threads: about one per 1.5% of revenue lost (or gained)
+  const g = svgEl("g", { fill: "none" });
+  others.forEach((j, k) => {
+    const v = pctv(L[q][j]), y = top + k * step, n = Math.min(26, Math.round(Math.abs(v) * 100 / 1.5)), r = 5 + 15 * Math.abs(v) / mx;
+    const c = col(v);
+    g.appendChild(svgEl("path", { d: `M${ox + 22},${oy} C${ox + (nx - ox) * 0.45},${oy} ${nx - (nx - ox) * 0.4},${y} ${nx - r - 3},${y}`, stroke: c, "stroke-opacity": 0.12, "stroke-width": 2 + Math.abs(v) * 70, "stroke-linecap": "round" }));
+    for (let t = 0; t < n; t++) {
+      const f = n > 1 ? t / (n - 1) - 0.5 : 0, js = Math.sin((j + 1) * 12.9898 + t * 78.233) * 0.5;
+      const d = `M${ox + 22},${oy + f * 26} C${ox + (nx - ox) * (0.38 + js * 0.12)},${oy + f * 60 + js * 20} ${nx - (nx - ox) * (0.42 - js * 0.1)},${y + f * 18} ${nx - r - 3},${y + f * Math.min(r, 8)}`;
+      const p = svgEl("path", { d, stroke: c, "stroke-opacity": 0.42, "stroke-width": 0.9, class: "thr" });
+      p.style.animationDelay = (-(t * 0.37 + k * 0.21) % 1.6).toFixed(2) + "s";
+      g.appendChild(p);
+    }
+  });
+  s.appendChild(g);
+  // origin
+  s.appendChild(svgEl("circle", { cx: ox, cy: oy, r: 60, fill: "url(#pr-glow)", opacity: 0.35 + 0.65 * Math.min(1, Math.abs(vo) / 0.25) }));
+  s.appendChild(svgEl("circle", { cx: ox, cy: oy, r: 22, fill: "#e8692d", stroke: "var(--panel)", "stroke-width": 2 }));
+  const st = (x, y, txt, extra = {}) => { const t = svgEl("text", Object.assign({ x, y }, extra)); t.textContent = txt; s.appendChild(t); return t; };
+  st(ox, oy + 5, (vo > 0 ? "+" : "") + Math.round(vo * 100) + "%", { "text-anchor": "middle", class: "pr-ov" });
+  st(ox, oy + 44, META.varShort[vars[io]], { "text-anchor": "middle", class: "pr-on" });
+  st(ox, oy + 59, "scenario", { "text-anchor": "middle", class: "pr-sub" });
+  if (!narrow) { st(nx, 16, "Revenue vs normal", { "text-anchor": "middle", class: "pr-sub" }); st(spX + spW / 2, 16, `Q1\u2013Q${L.length} path`, { "text-anchor": "middle", class: "pr-sub" }); }
+  // sector nodes, labels, sparklines
+  others.forEach((j, k) => {
+    const v = pctv(L[q][j]), y = top + k * step, r = 5 + 15 * Math.abs(v) / mx, c = col(v);
+    s.appendChild(svgEl("circle", { cx: nx, cy: y, r: r + 5, fill: c, opacity: 0.18 }));
+    const node = svgEl("circle", { cx: nx, cy: y, r, fill: c, stroke: "var(--panel)", "stroke-width": 1.5 }); s.appendChild(node);
+    st(nx + 26, y - 2, META.varShort[vars[j]], { class: "pr-on" });
+    st(nx + 26, y + 13, (v > 0 ? "+" : "") + Math.round(v * 100) + "%", { class: "pr-val", fill: c });
+    const html = `<b>${VARLAB[vars[j]]}</b><br>Quarter ${q + 1}: ${(v > 0 ? "+" : "") + (v * 100).toFixed(1)}% vs normal<br>${L.map((r, qq) => "Q" + (qq + 1) + " " + Math.round(pctv(r[j]) * 100) + "%").join(" \u00b7 ")}`;
+    node.addEventListener("mousemove", e => showTip(e, html)); node.addEventListener("mouseleave", hideTip);
+    if (!narrow) {
+      const X = qq => spX + qq / (L.length - 1) * spW, Y = vv => y - vv / mx * 13;
+      s.appendChild(svgEl("line", { x1: spX, x2: spX + spW, y1: y, y2: y, stroke: "var(--line-2)" }));
+      s.appendChild(svgEl("path", { d: L.map((r, qq) => `${qq ? "L" : "M"}${X(qq).toFixed(1)},${Y(pctv(r[j])).toFixed(1)}`).join(""), fill: "none", stroke: "#aab7cf", "stroke-width": 1.3 }));
+      s.appendChild(svgEl("circle", { cx: X(q), cy: Y(v), r: 3.2, fill: c, stroke: "var(--ink)", "stroke-width": 1 }));
+    }
+  });
+  box.innerHTML = ""; box.appendChild(s);
+  const c = RES.c, phase = q < c.dur ? "shock holds" : q < c.dur + c.rec ? "origin recovering" : "origin back to normal";
+  $("#pr-qlab").innerHTML = `<b>Quarter ${q + 1}</b> after the shock \u00b7 ${phase}`;
+  $("#pr-q").value = q + 1;
+  $("#heat").querySelectorAll("[data-q]").forEach(el => el.classList.toggle("qcol", +el.dataset.q === q));
+  drawRidge(q);
+}
+function drawRidge(q) {
+  const L = RES.net.shock, vars = CONN.variables, box = $("#pr-ridge"); if (!box) return;
+  const narrow = box.clientWidth < 640, W = narrow ? 400 : 900, H = narrow ? 330 : 380;
+  const pv = x => Math.exp(x) - 1, N = vars.length, Q = L.length;
+  const loss = vars.map((v, j) => Math.max(...L.map(r => -pv(r[j]))));
+  const order = vars.map((v, j) => j).sort((a, b) => loss[b] - loss[a]);       // biggest losses at the back
+  const mx = Math.max(0.05, ...loss), hs = (narrow ? 90 : 120) / mx;
+  const lw = narrow ? 52 : 98, x0 = narrow ? 66 : 150, span = narrow ? 240 : 560, dxk = narrow ? 6 : 13, dyk = narrow ? 18 : 21, y0 = narrow ? 120 : 150;
+  const P = (k, t, v) => [x0 + t / (Q - 1) * span + k * dxk, y0 + k * dyk - v * hs];
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Revenue lost by each series over the eight quarters, as layered ridges" });
+  const st = (x, y, txt, extra = {}) => { const t = svgEl("text", Object.assign({ x, y }, extra)); t.textContent = txt; s.appendChild(t); return t; };
+  const cur = [];
+  order.forEach((j, k) => {
+    const pts = L.map((r, t) => P(k, t, -pv(r[j])));
+    const [bx0, by0] = P(k, 0, 0), [bx1, by1] = P(k, Q - 1, 0);
+    const c = `rgb(${ramp(Math.min(1, 0.3 + loss[j] / mx * 0.7)).map(Math.round).join(",")})`;
+    const d = `M${bx0},${by0} ` + pts.map(([x, y]) => `L${x.toFixed(1)},${y.toFixed(1)}`).join(" ") + ` L${bx1},${by1} Z`;
+    s.appendChild(svgEl("path", { d, fill: c, "fill-opacity": 0.88, stroke: "var(--panel)", "stroke-width": 1 }));
+    s.appendChild(svgEl("line", { x1: bx0 - 8, x2: bx1 + 8, y1: by0, y2: by1, stroke: "var(--line-2)" }));
+    st(bx0 - 12, by0 + 4, META.varShort[vars[j]].toUpperCase(), { "text-anchor": "end", class: "rg-lab" });
+    cur.push(pts[q]);
+  });
+  // the selected quarter, joined across the layers
+  s.appendChild(svgEl("path", { d: cur.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join(""), fill: "none", stroke: "var(--ink)", "stroke-width": 1.4 }));
+  cur.forEach(([x, y]) => s.appendChild(svgEl("circle", { cx: x, cy: y, r: 4, fill: "var(--panel)", stroke: "var(--ink)", "stroke-width": 1.4 })));
+  // quarter axis along the front edge
+  const kf = N - 1, [ax0, ay0] = P(kf, 0, 0), [ax1, ay1] = P(kf, Q - 1, 0);
+  s.appendChild(svgEl("line", { x1: ax0, x2: ax1, y1: ay0 + 18, y2: ay1 + 18, stroke: "var(--ink)", "stroke-width": 1.2 }));
+  for (let t = 0; t < Q; t++) { const [x, y] = P(kf, t, 0); s.appendChild(svgEl("circle", { cx: x, cy: y + 18, r: t === q ? 3.5 : 2, fill: "var(--ink)" }));
+    st(x, y + 34, "Q" + (t + 1), { "text-anchor": "middle", class: t === q ? "rg-q on" : "rg-q" }); }
+  if (!narrow) st(W - 10, 20, `Height = revenue lost vs normal (tallest ${Math.round(mx * 100)}%)`, { "text-anchor": "end", class: "pr-sub" });
+  box.innerHTML = ""; box.appendChild(s);
+}
+
+function stopProp() { clearInterval(PR.timer); PR.timer = 0; $("#pr-play").textContent = "\u25b6 Play"; }
+function playProp() {
+  if (PR.timer) { stopProp(); return; }
+  const n = RES.net.shock.length; if (PR.q >= n - 1) PR.q = -1;
+  $("#pr-play").textContent = "\u275a\u275a Pause";
+  const step = () => { PR.q++; drawProp(); if (PR.q >= n - 1) stopProp(); };
+  step(); PR.timer = setInterval(step, 1100);
+}
+function initProp() {
+  $("#pr-play").onclick = playProp;
+  $("#pr-q").addEventListener("input", e => { stopProp(); PR.q = +e.target.value - 1; drawProp(); });
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce && "IntersectionObserver" in window) new IntersectionObserver((es, ob) => { if (es[0].isIntersecting && !PR.played) { PR.played = true; PR.q = -1; playProp(); ob.disconnect(); } }, { threshold: 0.5 }).observe($("#pr-flow"));
+}
+
+/* ---------- health module: from subsidy to health, live ---------- */
+function renderHealth() {
+  const P = Object.assign({}, CAL.params, { dw_depression: +RES.c.dw, psych_duration_years: RES.c.pdur, excess_mortality_rr: RES.c.mrr });
+  const d = SMESim.dalyPerJob(P);
+  $("#health-table").innerHTML = `<thead><tr><th class="l">Channel</th><th class="l">Calculation</th><th>DALYs per job lost</th></tr></thead><tbody>
+   <tr><td class="l">Depression &amp; anxiety</td><td class="l">${P.excess_psych_prev.toFixed(4)} excess prevalence \u00d7 ${P.dw_depression} weight \u00d7 ${P.psych_duration_years} yr</td><td>${d.psych.toFixed(4)}</td></tr>
+   <tr><td class="l">Excess mortality</td><td class="l">${(P.baseline_mortality * 100).toFixed(3)}% base \u00d7 +${Math.round(P.excess_mortality_rr * 100)}% \u00d7 ${P.yll_per_death} years lost</td><td>${d.mort.toFixed(4)}</td></tr>
+   <tr><td class="l"><b>Total</b></td><td></td><td><b>${d.total.toFixed(4)}</b></td></tr></tbody>`;
+  // DALYs per job: composition and plausible range (mild episode, no excess mortality ... severe episode, mortality doubled)
+  const lo = SMESim.dalyPerJob(Object.assign({}, P, { dw_depression: 0.145, excess_mortality_rr: 0 })).total;
+  const hi = SMESim.dalyPerJob(Object.assign({}, P, { dw_depression: 0.658, excess_mortality_rr: 1 })).total;
+  const sc = 100 / Math.max(hi, d.total) * 0.92;
+  $("#h-comp").innerHTML = `<div class="eyebrow">DALYs per job lost, with plausible range</div>
+    <div class="hcomp"><span style="width:${(d.psych * sc).toFixed(2)}%;background:var(--g1)"></span><span style="width:${(d.mort * sc).toFixed(2)}%;background:var(--g2)"></span>
+      <i style="left:${(lo * sc).toFixed(2)}%;width:${((hi - lo) * sc).toFixed(2)}%"></i></div>
+    <div class="legend"><span><span class="sw" style="background:var(--g1)"></span>Depression ${d.psych.toFixed(3)}</span><span><span class="sw" style="background:var(--g2)"></span>Mortality ${d.mort.toFixed(3)}</span><span>Range ${lo.toFixed(3)}\u2013${hi.toFixed(3)} (mild episode, no excess deaths \u2192 severe episode, deaths doubled) at a ${P.psych_duration_years}-year episode</span></div>`;
+  // the chain, per MOP 10m of subsidy, targeted vs untargeted, in the current scenario
+  const al = SMESim.allocation(RES.net.profiles, "jobsPerMOPm", 0.25);
+  const B = 10, jT = al.targeted * B, jU = al.untargeted * B;
+  const row = (lab, t, u, dg) => `<div class="hval"><b>${t.toFixed(dg)}</b><span>${lab}</span><em>untargeted ${u.toFixed(dg)}</em></div>`;
+  const c = RES.c, scen = `${VARLAB[c.origin]} ${c.shock}% for ${c.dur} quarter${c.dur > 1 ? "s" : ""}`;
+  $("#h-chain").innerHTML = `
+    <div class="hnode"><div class="hk">Scenario</div><div class="hval"><b>${c.shock}%</b><span>${scen}</span></div></div>
+    <div class="harr" aria-hidden="true"></div>
+    <div class="hnode"><div class="hk">Subsidy spent</div><div class="hval"><b>MOP ${B}m</b><span>targeted at the top-ranked profiles</span><em>vs spread over all eligible firms</em></div></div>
+    <div class="harr" aria-hidden="true"></div>
+    <div class="hnode"><div class="hk">Jobs kept</div>${row("jobs that would otherwise be lost", jT, jU, 0)}</div>
+    <div class="harr" aria-hidden="true"></div>
+    <div class="hnode"><div class="hk">Health events avoided</div>${row("depression episodes (\u00d7 " + (P.excess_psych_prev * 100).toFixed(1) + "%)", jT * P.excess_psych_prev, jU * P.excess_psych_prev, 1)}${row("deaths (\u00d7 " + (P.baseline_mortality * P.excess_mortality_rr * 100).toFixed(3) + "%)", jT * P.baseline_mortality * P.excess_mortality_rr, jU * P.baseline_mortality * P.excess_mortality_rr, 3)}</div>
+    <div class="harr" aria-hidden="true"></div>
+    <div class="hnode hl"><div class="hk">Health burden avoided</div>${row("DALYs (" + Math.round(d.psych / d.total * 100) + "% from depression)", jT * d.total, jU * d.total, 2)}</div>`;
+  // cost-effectiveness against Macao's GDP per capita
+  const G = META.gdp_pc, cT = B * 1e6 / (jT * d.total), cU = B * 1e6 / (jU * d.total);
+  const m = x => "MOP " + (x / 1e6).toFixed(1) + "m";
+  $("#h-ce").innerHTML = `<div class="eyebrow">Is it worth it as health spending?</div>
+    <div class="ce-row"><span>Cost per DALY avoided, targeted</span><b>${m(cT)}</b><em>${(cT / G.value).toFixed(1)}\u00d7 GDP per capita</em></div>
+    <div class="ce-row"><span>Cost per DALY avoided, untargeted</span><b>${m(cU)}</b><em>${(cU / G.value).toFixed(1)}\u00d7 GDP per capita</em></div>
+    <div class="ce-row"><span>Health value returned per pataca, valuing a DALY at one GDP per capita</span><b>${Math.round(G.value / cT * 100)}%</b><em>untargeted ${Math.round(G.value / cU * 100)}%</em></div>
+    <p class="note">Macao GDP per capita: MOP ${G.value.toLocaleString("en")} (${G.year}; <a href="${G.url}" target="_blank" rel="noopener">${G.source}</a>). By the usual 1\u20133\u00d7 GDP per capita convention (WHO-CHOICE), the subsidy is not a cost-effective <i>health</i> programme on its own, and we do not claim it is. Health is a co-benefit of an economic policy: targeting raises the health value returned per pataca about ${(cU / cT).toFixed(1)}\u00d7. The GDP-per-capita rule is a rough convention, and WHO now advises against using it alone (Bertram et al. 2016).</p>`;
+  $("#health-note").innerHTML = `<p>Default evidence is East Asian where it exists: in a Korean national panel, losing a permanent job raised the odds of depression 1.78 times (Yoo et al. 2016), about 9 extra percentage points. The international meta-analysis (34% vs 16%; Paul &amp; Moser 2009) is the upper comparator. Mortality rises about 50% in the year after job loss, consistent across a 42-study international meta-analysis (Roelfs et al. 2011) and US administrative data.</p>
+   <p style="margin-top:10px">Every job carries the same expected burden, so ranking by <b>DALYs per MOP</b> gives the same order as jobs per MOP; it states the result in health terms. The chain above moves with every slider: a deeper shock or a better-targeted subsidy changes the jobs kept, and the health assumptions in the panel change the burden per job. Episode length, baseline mortality and years of life lost come from ten Have et al. (2017), UN mortality estimates for Macao and DSEC life expectancy; see Method &amp; sources.</p>`;
+}
+
+/* ---------- static: connectedness ---------- */
+function renderNetwork() {
+  const vars = CONN.variables, N = vars.length, net = CONN.net, PW = CONN.pairwise_net, TO = CONN.to;
+  const W = 440, H = 420, cx = W / 2, cy = H / 2 + 4, R = 138, mxTo = Math.max(...TO);
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Net pairwise spillovers between sectors" });
+  const defs = svgEl("defs");
+  for (const [id, col] of [["arr", "var(--ink-2)"], ["arr-out", "var(--div-pos)"], ["arr-in", "var(--div-neg)"]]) {
+    const mk = svgEl("marker", { id, viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto-start-reverse" });
+    mk.appendChild(svgEl("path", { d: "M0,0 L10,5 L0,10 z", fill: col })); defs.appendChild(mk); }
+  s.appendChild(defs);
+  const rad = i => 8 + 11 * Math.sqrt(TO[i] / mxTo);
+  const pos = vars.map((_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [cx + R * Math.cos(a), cy + R * Math.sin(a), a]; });
+  const edges = []; for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (PW[i][j] > 0) edges.push([i, j, PW[i][j]]);
+  edges.sort((a, b) => b[2] - a[2]); const top = edges.slice(0, 14), mx = top[0][2];
+  const eEls = [];
+  for (const [i, j, w] of top) {
+    const [x1, y1] = pos[i], [x2, y2] = pos[j];
+    const mxp = (x1 + x2) / 2, myp = (y1 + y2) / 2, qx = mxp + (cx - mxp) * 0.3, qy = myp + (cy - myp) * 0.3;
+    // trim the ends to the node circles
+    const t1 = (rad(i) + 2) / Math.hypot(qx - x1, qy - y1), t2 = (rad(j) + 4) / Math.hypot(x2 - qx, y2 - qy);
+    const sx = x1 + (qx - x1) * t1, sy = y1 + (qy - y1) * t1, ex = x2 - (x2 - qx) * t2, ey = y2 - (y2 - qy) * t2;
+    const d = `M${sx.toFixed(1)},${sy.toFixed(1)} Q${qx.toFixed(1)},${qy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}`;
+    const ln = svgEl("path", { d, fill: "none", stroke: "var(--ink-2)", "stroke-opacity": 0.5, "stroke-width": (1 + 3.5 * w / mx).toFixed(2), "marker-end": "url(#arr)" });
+    ln.style.transition = "stroke-opacity .2s";
+    const html = `<b>${VARLAB[vars[i]]} \u2192 ${VARLAB[vars[j]]}</b><br>net pairwise spillover ${w.toFixed(1)} pp`;
+    const hit = svgEl("path", { d, fill: "none", stroke: "transparent", "stroke-width": 10 });
+    hit.addEventListener("mousemove", e => showTip(e, html)); hit.addEventListener("mouseleave", hideTip);
+    s.appendChild(ln); s.appendChild(hit); eEls.push([i, j, ln]);
+  }
+  const focus = k => eEls.forEach(([i, j, ln]) => {
+    if (k < 0) { ln.setAttribute("stroke", "var(--ink-2)"); ln.setAttribute("stroke-opacity", 0.5); ln.setAttribute("marker-end", "url(#arr)"); return; }
+    const on = i === k || j === k; ln.setAttribute("stroke-opacity", on ? 0.95 : 0.07);
+    ln.setAttribute("stroke", on ? (i === k ? "var(--div-pos)" : "var(--div-neg)") : "var(--ink-2)");
+    ln.setAttribute("marker-end", on ? (i === k ? "url(#arr-out)" : "url(#arr-in)") : "url(#arr)"); });
+  vars.forEach((v, i) => { const [x, y, a] = pos[i];
+    const c = svgEl("circle", { cx: x, cy: y, r: rad(i), fill: net[i] >= 0 ? "var(--div-pos)" : "var(--div-neg)", "fill-opacity": 0.35 + 0.65 * Math.min(1, Math.abs(net[i]) / 40), stroke: "var(--panel)", "stroke-width": 2 });
+    c.style.cursor = "pointer";
+    const html = `<b>${VARLAB[v]}</b><br>Spills over TO others ${CONN.to[i].toFixed(1)} \u00b7 receives FROM others ${CONN.frm[i].toFixed(1)}<br>NET ${net[i] > 0 ? "+" : ""}${net[i].toFixed(1)}<br><span style="opacity:.8">Blue arrows: what it sends \u00b7 red: what it receives</span>`;
+    c.addEventListener("mousemove", e => { focus(i); showTip(e, html); }); c.addEventListener("mouseleave", () => { focus(-1); hideTip(); });
+    s.appendChild(c);
+    const lr = R + rad(i) + 10, lx = cx + lr * Math.cos(a), ly = cy + lr * Math.sin(a); const anchor = Math.abs(Math.cos(a)) < 0.25 ? "middle" : Math.cos(a) > 0 ? "start" : "end";
+    const t = svgEl("text", { x: lx, y: ly + 4, "text-anchor": anchor, class: "lbl", style: "fill:var(--ink-2)" }); t.textContent = META.varShort[v]; s.appendChild(t); });
+  const box = $("#net-chart"); box.innerHTML = `<div class="legend" style="margin-bottom:6px"><span><span class="sw" style="background:var(--div-pos);border-radius:50%"></span>Net transmitter</span><span><span class="sw" style="background:var(--div-neg);border-radius:50%"></span>Net receiver</span><span>Size: spillovers to others \u00b7 arrows: 14 largest net flows \u00b7 hover a node</span></div>`; box.appendChild(s);
+}
+function renderRolling() {
+  const d = CONN.rolling, W = 420, H = 300, m = { l: 40, r: 14, t: 24, b: 34 };
+  const lo = 60, hi = 100;
+  const X = i => m.l + i / (d.length - 1) * (W - m.l - m.r), Y = v => H - m.b - (v - lo) / (hi - lo) * (H - m.t - m.b);
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Rolling total connectedness index" });
+  const t0 = svgEl("text", { x: m.l, y: 12, class: "lbl" }); t0.textContent = `Total connectedness, rolling ${CONN.rolling_window}-quarter window (%), by window end`; s.appendChild(t0);
+  const idx = q => d.findIndex(r => r[0] === q);
+  // events, as factual date ranges: COVID border closures 2020-2022, reopening January 2023
+  const c0 = idx("2020Q1"), c1 = idx("2022Q4"), ro = idx("2023Q1");
+  if (c0 >= 0 && c1 >= 0) { s.appendChild(svgEl("rect", { x: X(c0), y: m.t, width: X(c1) - X(c0), height: H - m.t - m.b, fill: "var(--div-neg)", "fill-opacity": 0.08 }));
+    const t = svgEl("text", { x: (X(c0) + X(c1)) / 2, y: m.t + 12, "text-anchor": "middle", class: "lbl" }); t.textContent = "COVID 2020\u201322"; s.appendChild(t); }
+  if (ro >= 0) { s.appendChild(svgEl("line", { x1: X(ro), x2: X(ro), y1: m.t, y2: H - m.b, stroke: "var(--good)", "stroke-dasharray": "3 3" }));
+    const t = svgEl("text", { x: X(ro) + 4, y: H - m.b - 6, class: "lbl" }); t.textContent = "Reopening"; s.appendChild(t); }
+  for (let v = lo; v <= hi; v += 10) { s.appendChild(svgEl("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--line)" }));
+    const t = svgEl("text", { x: m.l - 6, y: Y(v) + 4, "text-anchor": "end", class: "lbl" }); t.textContent = v; s.appendChild(t); }
+  d.forEach(([q], i) => { if (q.endsWith("Q4") && (+q.slice(0, 4)) % 2 === 0) { const t = svgEl("text", { x: X(i), y: H - m.b + 16, "text-anchor": "middle", class: "lbl" }); t.textContent = q.slice(0, 4); s.appendChild(t); } });
+  const path = d.map(([, v], i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+  s.appendChild(svgEl("path", { d: path + `L${X(d.length - 1)},${Y(lo)}L${X(0)},${Y(lo)}Z`, fill: "var(--accent)", "fill-opacity": 0.1 }));
+  s.appendChild(svgEl("path", { d: path, fill: "none", stroke: "var(--accent)", "stroke-width": 2 }));
+  const li = d.length - 1; s.appendChild(svgEl("circle", { cx: X(li), cy: Y(d[li][1]), r: 4, fill: "var(--accent)" }));
+  const lt = svgEl("text", { x: X(li) - 6, y: Y(d[li][1]) - 9, "text-anchor": "end", class: "lbl" }); lt.textContent = d[li][1].toFixed(1) + "% (" + d[li][0] + ")"; s.appendChild(lt);
+  const cross = svgEl("line", { y1: m.t, y2: H - m.b, stroke: "var(--line-2)" }); cross.style.display = "none"; s.appendChild(cross);
+  const hit = svgEl("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" });
+  hit.addEventListener("mousemove", e => { const r = s.getBoundingClientRect(); const fx = (e.clientX - r.left) / r.width * W; const i = Math.max(0, Math.min(li, Math.round((fx - m.l) / (W - m.l - m.r) * li)));
+    cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.style.display = ""; showTip(e, `<b>Window ending ${d[i][0]}</b><br>${d[i][1].toFixed(1)}%`); });
+  hit.addEventListener("mouseleave", () => { cross.style.display = "none"; hideTip(); }); s.appendChild(hit);
+  const box = $("#roll-chart"); box.innerHTML = ""; box.appendChild(s);
+}
+function renderDYMatrix() {
+  const v = CONN.variables, th = CONN.theta, S = META.varShort, N = v.length;
+  let mx = 0; for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (i !== j) mx = Math.max(mx, th[i][j]);
+  const cell = (x, diag) => { const a = diag ? 0 : Math.min(1, x / mx); return `<td style="background:${diag ? "var(--bg)" : `rgba(37,106,191,${(0.06 + 0.84 * a).toFixed(2)})`};color:${diag ? "var(--muted)" : a > 0.5 ? "#fff" : "var(--ink)"}">${x.toFixed(0)}</td>`; };
+  let h = `<thead><tr><th class="l" scope="col">Receives &#x2193; \u00b7 from &#x2192;</th>${v.map(x => `<th scope="col">${S[x]}</th>`).join("")}<th scope="col">From others</th></tr></thead><tbody>`;
+  v.forEach((x, i) => { h += `<tr><th class="l" scope="row">${S[x]}</th>${th[i].map((t, j) => cell(t, i === j)).join("")}<td class="tot">${CONN.frm[i].toFixed(0)}</td></tr>`; });
+  h += `<tr><th class="l" scope="row">To others</th>${CONN.to.map(t => `<td class="tot">${t.toFixed(0)}</td>`).join("")}<td class="tot"><b>${CONN.total.toFixed(1)}%</b></td></tr></tbody>`;
+  $("#dy-matrix").innerHTML = h;
+}
+
+function renderDY() {
+  const v = CONN.variables, R = CONN.robustness;
+  let h = `<thead><tr><th class="l">Series</th><th>To others</th><th>From others</th><th>Net</th><th>Net \u00b7 no winsorising</th><th>Net \u00b7 pre-COVID</th></tr></thead><tbody>`;
+  v.forEach((x, i) => { const sgn = a => a > 0 ? "+" : ""; const flip = Math.sign(CONN.net[i]) !== Math.sign(R.precovid_net[i]);
+    h += `<tr><td class="l">${VARLAB[x]}</td><td>${CONN.to[i].toFixed(1)}</td><td>${CONN.frm[i].toFixed(1)}</td><td><b>${sgn(CONN.net[i])}${CONN.net[i].toFixed(1)}</b></td><td>${sgn(R.raw_net[i])}${R.raw_net[i].toFixed(1)}</td><td>${sgn(R.precovid_net[i])}${R.precovid_net[i].toFixed(1)}${flip ? ' <span class="pill warn">sign flips</span>' : ""}</td></tr>`; });
+  $("#dy-table").innerHTML = h + "</tbody>";
+  $("#n-total").textContent = "Total connectedness " + CONN.total.toFixed(1) + "%";
+  $("#n-rob").textContent = `${CONN.total.toFixed(1)}% main, ${R.raw_total.toFixed(1)}% without winsorising, ${R.precovid_total.toFixed(1)}% pre-COVID`;
+  $("#n-p").textContent = CONN.var_lag; $("#n-sample").textContent = CONN.sample.join("\u2013") + " (" + CONN.T + " quarters)";
+}
+function renderSources() {
+  const tag = t => ({ data: '<span class="tag data">DSEC data</span>', evidence: '<span class="tag lit">Evidence</span>', health: '<span class="tag lit">Evidence</span>',
+    calibrated: '<span class="tag asm">Derived</span>', policy: '<span class="tag data">Policy</span>', finance: '<span class="tag data">Market</span>' })[t] || '<span class="tag asm">Other</span>';
+  let h = `<thead><tr><th>Model series</th><th>DSEC indicator</th><th>ID</th><th>Unit \u00b7 frequency</th><th>Used as</th></tr></thead><tbody>`;
+  for (const r of META.series) h += `<tr><td>${r.label}</td><td>${r.dsec}</td><td class="id">${r.ids}</td><td>${r.unit}</td><td>${r.use}</td></tr>`;
+  $("#src-data").innerHTML = h + `</tbody><caption style="caption-side:bottom;text-align:left;padding:8px 10px" class="note">Source: DSEC Time Series Database, <a href="https://www.dsec.gov.mo/ts/#!/step1/en-US" target="_blank" rel="noopener">dsec.gov.mo/ts</a>. Search an ID there to check any figure. Retrieved ${META.retrieved} via the database's own API.</caption>`;
+  const c = CAL.cost;
+  const row = (k, label) => `<tr><td>${label}</td><td class="id">${c[k].dsec_ids.join(", ")}</td><td>${pct(c[k].cogs_share, 1)}</td><td>${pct(c[k].wage_share, 1)}</td><td>${pct(c[k].opex_share, 1)}</td><td>${pct(c[k].margin, 1)}</td><td>MOP ${Math.round(c[k].rev_per_worker_month).toLocaleString()}</td></tr>`;
+  $("#src-cal").innerHTML = `<thead><tr><th>Survey</th><th>DSEC IDs</th><th>Goods purchased</th><th>Wages</th><th>Other operating costs</th><th>Implied margin</th><th>Revenue per worker per month</th></tr></thead><tbody>${row("retail", "Retail trade establishments")}${row("restaurant", "Restaurants &amp; similar establishments")}</tbody>
+    <caption style="caption-side:bottom;text-align:left;padding:8px 10px" class="note">Shares of 2024 receipts. Goods purchased scale with revenue; wages and other costs are fixed in the short run. Restaurants' aggregate margin is negative in 2024 (DSEC gross surplus \u2212MOP 40m), which is why they rank as the most fragile group.</caption>`;
+  let o = `<thead><tr><th>Type</th><th>Parameter</th><th>Basis</th><th>Source</th></tr></thead><tbody>`;
+  for (const s of CAL.sources.concat(META.extra_sources || [])) o += `<tr><td>${tag(s.type)}</td><td>${s.item}</td><td>${s.basis || ""}</td><td>${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${s.source}</a>` : s.source}</td></tr>`;
+  $("#src-other").innerHTML = o + "</tbody>";
+  let sv = `<thead><tr><th>Setting changed</th><th>Value</th><th>Targeting gain (x)</th><th>Jobs per MOP 1m, targeted</th><th>Top-20 profiles missed firm-by-firm</th><th>DALYs avoided per MOP 10m, targeted</th></tr></thead><tbody>`;
+  for (const r of META.sensitivity) sv += `<tr${r.group === "Baseline" ? ' style="font-weight:700"' : ""}><td>${r.group}</td><td>${r.label}</td><td>${r.ratio.toFixed(1)}</td><td>${r.targeted.toFixed(1)}</td><td>${r.missed}</td><td>${r.daly10.toFixed(2)}</td></tr>`;
+  $("#src-sens").innerHTML = sv + `</tbody><caption style="caption-side:bottom;text-align:left;padding:8px 10px" class="note">Each row changes one setting from the baseline (visitors -25% for 4 quarters, scheme parameters). Amortising loans lower the targeting gain because repayments drain cash for every firm alike. Health settings change only the DALY column; the job results do not depend on them.</caption>`;
+  document.querySelectorAll(".m-last").forEach(e => e.textContent = CONN.sample[1]);
+  $("#m-ret").textContent = META.retrieved; $("#m-roll").textContent = CONN.rolling_window; $("#m-paths").textContent = CONN.noise_paths.length;
+}
+
+
+function renderDesign() {
+  const T = META.tiered, pc = x => (+(x * 100).toFixed(2)) + "%";
+  let h = `<thead><tr><th>Top-ranked profiles</th><th>Rate for them</th><th>Rate for others</th><th>Jobs protected vs flat 4%</th><th>Cost vs flat 4%</th></tr></thead><tbody>`;
+  for (const d of T.by_share) h += `<tr${d.topShare === 0.25 ? ' style="font-weight:700"' : ""}><td>${Math.round(d.topShare * 100)}%</td><td>${pc(d.highRate)}${Math.abs(d.highRate - T.bank_rate) < 1e-9 ? " (all interest)" : ""}</td><td>${pc(d.lowRate)}</td><td class="up">+${Math.round(d.gain * 100)}%</td><td>${Math.round(d.costVsFlat * 100)}%</td></tr>`;
+  $("#tier-table").innerHTML = h + "</tbody>";
+  const q = T.by_share.find(d => d.topShare === 0.25);
+  $("#tier-note").innerHTML = `Default scenario (visitors &#x2212;25% for 4 quarters). Example: covering all interest for the top quarter of profiles and paying 3% for the rest protects <b>${Math.round(q.gain * 100)}% more jobs</b> at <b>${Math.round(q.costVsFlat * 100)}%</b> of the flat-rate cost. Rates above 4% would need the scheme's cap to be raised for the priority tier. Tiers come from the precomputed default scenario; ranking sliders do not change this table.`;
+}
+function renderValidation() {
+  const B = META.backtest, L = META.varLabels, pc = x => (x > 0 ? "+" : "") + Math.round(x * 100) + "%";
+  const c = B.covid;
+  $("#v-vis").textContent = pc(c.visitors_actual_avg_change);
+  let h = `<thead><tr><th>Sector</th><th>Exposure to visitors, 2011&#x2013;2019</th><th>Predicted change</th><th>Actual change 2020&#x2013;22</th></tr></thead><tbody>`;
+  c.sectors.forEach((s, i) => h += `<tr><td>${L[s]}</td><td>${c.exposure_pre2020[i].toFixed(2)}</td><td>${pc(c.predicted_avg_change[i])}</td><td>${pc(c.actual_avg_change[i])}</td></tr>`);
+  $("#val-covid").innerHTML = h + "</tbody>";
+  $("#val-covid-note").innerHTML = `Rank correlation between predicted and actual losses: <b>${c.spearman.toFixed(2)}</b>; average error ${c.mae_log.model.toFixed(2)} log points vs ${c.mae_log.no_contagion.toFixed(2)} if no contagion is assumed. Gaming, hotels and restaurants were correctly predicted to fall hardest. Luxury retail was not: before 2020 it tracked VIP gaming rather than visitor numbers, so pre-2020 data alone understate today's link. That is why the model uses data through ${CONN.sample[1]}; with that full sample the same ranking correlation is ${c.spearman_full_sample_in_sample.toFixed(2)} (in-sample).`;
+  const e = B.current_exposure; let n = `<thead><tr><th>Sector</th><th>Model exposure (2011&#x2013;2026)</th><th>Visitor share of 2025 sales</th></tr></thead><tbody>`;
+  for (const k of Object.keys(e.model)) n += `<tr><td>${L[k]}</td><td>${e.model[k].toFixed(2)}</td><td>${e.visitor_share_2025[k].toFixed(2)}</td></tr>`;
+  $("#val-now").innerHTML = n + "</tbody>";
+  const r = META.sensitivity.find(x => x.group === "Retail exposure"), b = META.sensitivity[0];
+  $("#val-now-note").innerHTML = `The two measures are close; the model is somewhat more exposed for jewellery and leather goods, i.e. on the cautious side. Re-running the whole simulation with the 2025 shares gives a value-for-money ratio of <b>${r.ratio.toFixed(1)}x</b> (baseline ${b.ratio.toFixed(1)}x) and ${r.missed} of the top 20 missed firm-by-firm (baseline ${b.missed}).`;
+  const R = B.recent;
+  $("#val-recent-note").innerHTML = `Estimated on data up to 2024 and given the actual visitor numbers for 2025&#x2013;2026, the model forecast sector growth with an error of ${R.rmse.model_with_visitors.toFixed(3)} log points, no better than simply assuming no change (${R.rmse.no_change.toFixed(3)}). Visitor numbers rose 4&#x2013;19% year on year while most retail sales stayed flat: spending per visitor fell. The model is therefore a <b>stress-testing tool for shocks</b>, not a forecaster of normal quarters, and spending per visitor is a second risk the scheme should watch.`;
+}
+
+/* ---------- applicant check ---------- */
+const AP = { arm: "flat", last: null };
+function initApplicant() {
+  const sel = $("#ap-sector");
+  sel.innerHTML = CAL.sectors.map(s => `<option value="${s.key}"${s.key === "restaurant_local" ? " selected" : ""}>${s.name}</option>`).join("");
+  let t = 0;
+  const go = () => { clearTimeout(t); t = setTimeout(renderApplicant, 120); };
+  ["ap-sector", "ap-staff", "ap-days", "ap-margin"].forEach(id => $("#" + id).addEventListener("input", go));
+  $("#ap-form").addEventListener("submit", e => e.preventDefault());
+  $("#ap-waffle").innerHTML = Array.from({ length: 100 }, (_, i) => `<svg class="shop" viewBox="0 0 24 24" style="transition-delay:${(i % 10) * 12 + Math.floor(i / 10) * 18}ms"><use href="#shopi"/></svg>`).join("");
+  document.querySelectorAll("#ap-arm button").forEach(b => b.addEventListener("click", () => {
+    AP.arm = b.dataset.arm; AP.touched = true; document.querySelectorAll("#ap-arm button").forEach(x => x.setAttribute("aria-pressed", x === b)); drawApplicant(); }));
+}
+function renderApplicant() {
+  if (!RES) return;
+  const sec = $("#ap-sector").value, m = +$("#ap-margin").value;
+  const E = Math.min(100, Math.max(1, Math.round(+$("#ap-staff").value || 1)));
+  const D = Math.min(365, Math.max(1, Math.round(+$("#ap-days").value || 1)));
+  const calOne = Object.assign({}, CAL, { sectors: CAL.sectors.filter(s => s.key === sec) });
+  const P = Object.assign({}, RES.base.params, { sizes: [E], buffers: [D] });
+  const bank = CAL.params.prime_rate + P.loan_spread;
+  const flat = SMESim.simulate(CONN, calOne, Object.assign({}, RES.base, { params: P, trace: true }));
+  const full = SMESim.simulate(CONN, calOne, Object.assign({}, RES.base, { params: Object.assign({}, P, { subsidy_rate: bank }), trace: true }));
+  const pick = r => r.profiles.find(p => Math.sign(p.marginShift) === m);
+  const a = pick(flat), b = pick(full);
+  // tier rule = the two-tier design: top quarter of the 216 reference profiles by jobs per MOP at the flat rate
+  const ref = RES.net.profiles.map(p => p.jobsPerMOPm).sort((x, y) => y - x);
+  const thr = ref[Math.round(0.25 * ref.length) - 1];
+  const better = ref.filter(v => v > a.jobsPerMOPm).length;
+  const topPct = Math.max(1, Math.round((better + 1) / ref.length * 100));
+  const priority = a.delta > 0 && a.jobsPerMOPm >= thr;
+  const flatLab = (+RES.c.sub.toFixed(2)) + "%", fullLab = (+(bank * 100).toFixed(2)) + "%";
+  AP.last = { a, b, E, flatLab, fullLab, priority };
+  $("#ap-arm").querySelector('[data-arm="flat"]').textContent = "Flat " + flatLab;
+  $("#ap-arm").querySelector('[data-arm="full"]').textContent = "All interest (" + fullLab + ")";
+  if (!AP.touched) { AP.arm = priority ? "full" : "flat"; document.querySelectorAll("#ap-arm button").forEach(x => x.setAttribute("aria-pressed", x.dataset.arm === AP.arm)); }
+  let why;
+  if (a.p0 >= 0.97) why = "This firm survives the scenario without help, so a subsidy adds little.";
+  else if (b.p1 < 0.03) why = "The shock is too deep for interest relief alone to keep this firm open.";
+  else why = `It keeps ${fmt(a.jobsPerMOPm, 1)} jobs per MOP 1m of subsidy at the flat rate, in the top ${topPct}% of the 216 reference profiles (priority cut-off ${fmt(thr, 1)}).`;
+  const dj = RES.net.daly.total;
+  const box = $("#ap-tier");
+  box.className = "ap-tier" + (priority ? " priority" : "");
+  box.innerHTML = priority
+    ? `<span class="pill good">Priority tier</span><div class="t">Cover all interest</div><p class="note">${why}</p><p class="note">Expected jobs kept: <b>${fmt(b.jobsSaved, 1)}</b> of ${E} with all interest, ${fmt(a.jobsSaved, 1)} at the flat rate. Health burden avoided: about ${fmt(b.jobsSaved * dj, 2)} DALYs.</p>${b.p1 < 0.2 ? `<p class="note"><b>Caution:</b> even with all interest covered, survival stays at ${Math.round(b.p1 * 100)}%. The subsidy looks cheap here because payments stop if the firm closes. This firm likely needs more than interest relief, such as rent support or restructuring advice.</p>` : ""}`
+    : `<span class="pill acc">Standard tier</span><div class="t">Pay 3%</div><p class="note">${why}</p><p class="note">Expected jobs kept at the flat rate: ${fmt(a.jobsSaved, 1)} of ${E}. Health burden avoided: about ${fmt(a.jobsSaved * dj, 2)} DALYs.</p>`;
+  $("#ap-note").innerHTML = `Loan: ${P.loan_months_of_fixed_cost} months of fixed costs (the default matches the scheme's average loan), here MOP ${Math.round(a.loan).toLocaleString("en")} (cap MOP ${(P.loan_cap / 1e6).toFixed(1)}m). Costs come from DSEC 2024 surveys for the sector. Each of the 100 shops stands for 1% of the ${RES.net.nPaths} simulated futures for this firm; all three outcomes use the same futures. Tiers follow the two-tier design above; all-interest cover is above today's 4% cap and is proposed for the next round.`;
+  drawApplicant();
+}
+function drawApplicant() {
+  if (!AP.last) return;
+  const { a, b, flatLab, fullLab } = AP.last, full = AP.arm === "full", arm = full ? b : a;
+  const n0 = Math.round(a.p0 * 100), n1 = Math.max(n0, Math.round(arm.p1 * 100));
+  $("#ap-waffle").querySelectorAll(".shop").forEach((el, i) => { el.setAttribute("class", "shop " + (i < n0 ? "s-safe" : i < n1 ? "s-saved" : "s-closed")); });
+  const lab = full ? "all interest covered" : "the flat " + flatLab;
+  const ico = c => `<svg class="shop" viewBox="0 0 24 24" style="color:${c};width:30px;transform:none"><use href="#shopi"/></svg>`;
+  $("#ap-key").innerHTML = `<div class="ap-stat"><b style="color:var(--accent)">${n0}</b><span>${ico("var(--accent)")}stay open anyway</span></div><div class="ap-stat"><b style="color:var(--good)">${n1 - n0}</b><span>${ico("var(--good)")}saved by ${lab}</span></div><div class="ap-stat"><b style="color:var(--muted)">${100 - n1}</b><span>${ico("var(--muted)")}close within 24 months</span></div>`;
+  // the firm's own staff: expected jobs, shown as whole people
+  const E = AP.last.E, k0 = E * a.p0, k1 = E * arm.p1, r0 = Math.round(k0), r1 = Math.max(r0, Math.round(k1));
+  $("#ap-people-h").textContent = `This firm's ${E} staff, on average`;
+  $("#ap-people").innerHTML = Array.from({ length: E }, (_, i) => `<svg viewBox="0 0 12 24" class="person ${i < r0 ? "s-safe" : i < r1 ? "s-saved" : "s-closed"}"><use href="#personi"/></svg>`).join("");
+  $("#ap-people").setAttribute("aria-label", `${E} staff: about ${k0.toFixed(1)} keep their job anyway, ${(k1 - k0).toFixed(1)} are kept by the subsidy, ${(E - k1).toFixed(1)} lose it`);
+  $("#ap-people-n").textContent = `Expected: ${k0.toFixed(1)} keep their job anyway, ${(k1 - k0).toFixed(1)} kept by ${lab}, ${(E - k1).toFixed(1)} lose it (icons rounded to whole people).`;
+  // month-by-month survival curves
+  const narrow = $("#ap-curve").clientWidth < 560;
+  const W = narrow ? 400 : 760, H = narrow ? 280 : 250, m = { l: 40, r: narrow ? 100 : 112, t: 22, b: 34 }, T = a.alive0.length;
+  const X = mo => m.l + mo / T * (W - m.l - m.r), Y = v => H - m.b - v * (H - m.t - m.b);
+  const s = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Share of firms like this still open, month by month" });
+  const c = RES.c, shockEnd = Math.min(T, c.dur * 3), recEnd = Math.min(T, (c.dur + c.rec) * 3);
+  s.appendChild(svgEl("rect", { x: X(0), y: m.t, width: X(shockEnd) - X(0), height: H - m.t - m.b, fill: "var(--div-neg)", "fill-opacity": 0.07 }));
+  if (recEnd > shockEnd) s.appendChild(svgEl("rect", { x: X(shockEnd), y: m.t, width: X(recEnd) - X(shockEnd), height: H - m.t - m.b, fill: "var(--div-neg)", "fill-opacity": 0.03 }));
+  const st = (x, y, txt, cls = "lbl", anchor = "start", extra = {}) => { const t = svgEl("text", Object.assign({ x, y, class: cls, "text-anchor": anchor }, extra)); t.textContent = txt; s.appendChild(t); return t; };
+  st(X(0) + 4, m.t - 6, "Shock", "lbl"); if (recEnd > shockEnd) st(X(shockEnd) + 4, m.t - 6, "Recovery", "lbl");
+  for (let v = 0; v <= 1.0001; v += 0.25) { s.appendChild(svgEl("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: "var(--line)" })); st(m.l - 6, Y(v) + 4, Math.round(v * 100) + "%", "lbl", "end"); }
+  for (let mo = 0; mo <= T; mo += 6) st(X(mo), H - m.b + 16, mo === 0 ? "Month 0" : String(mo), "lbl", "middle");
+  const path = arr => [[0, 1], ...arr.map((v, i) => [i + 1, v])].map(([mo, v], i) => `${i ? "L" : "M"}${X(mo).toFixed(1)},${Y(v).toFixed(1)}`).join("");
+  const sel = full ? b.alive1 : a.alive1;
+  // shaded gap = firms the subsidy keeps open
+  const upper = [[0, 1], ...sel.map((v, i) => [i + 1, v])], lower = [[0, 1], ...a.alive0.map((v, i) => [i + 1, v])].reverse();
+  s.appendChild(svgEl("path", { d: [...upper, ...lower].map(([mo, v], i) => `${i ? "L" : "M"}${X(mo).toFixed(1)},${Y(v).toFixed(1)}`).join("") + "Z", fill: "var(--good)", "fill-opacity": 0.16 }));
+  const lines = [
+    [a.alive0, "var(--muted)", "No subsidy", false],
+    [a.alive1, "var(--accent)", "Flat " + flatLab, !full],
+    [b.alive1, "var(--good)", "All interest", full],
+  ];
+  const ends = [];
+  for (const [arr, col, name, on] of lines) {
+    s.appendChild(svgEl("path", { d: path(arr), fill: "none", stroke: col, "stroke-width": on ? 3 : 1.6, "stroke-opacity": on || name === "No subsidy" ? 1 : 0.55, "stroke-linejoin": "round" }));
+    ends.push([Y(arr[T - 1]), `${name} ${Math.round(arr[T - 1] * 100)}%`, col]);
+  }
+  ends.sort((p, q) => p[0] - q[0]); for (let i = 1; i < ends.length; i++) if (ends[i][0] - ends[i - 1][0] < 13) ends[i][0] = ends[i - 1][0] + 13;
+  ends.forEach(([y, txt, col]) => st(W - m.r + 6, y + 4, txt, "lbl", "start", { style: `fill:${col};font-weight:600` }));
+  renderTour();
+  const box = $("#ap-curve"); box.innerHTML = `<div class="eyebrow" style="margin-bottom:4px">Share of firms like this still open, month by month</div>`; box.appendChild(s);
+}
+
+/* ---------- trilingual plaques ---------- */
+function initPlaques() {
+  const T = META.titles;
+  const mk = (k, cls) => { const d = document.createElement("div"); d.className = "plaque" + (cls ? " " + cls : "");
+    d.innerHTML = `<span class="zh" lang="zh-Hant">${T[k][0]}</span><span class="pt" lang="pt">${T[k][1]}</span>`; return d; };
+  for (const k in T) { const sec = document.getElementById(k); const head = sec && sec.querySelector(".head"); if (head && head.querySelector("h2")) {
+    const pill = head.querySelector(":scope > .pill");
+    if (pill) { const w = document.createElement("div"); w.className = "head-side"; pill.replaceWith(w); w.appendChild(mk(k, "side")); w.appendChild(pill); }
+    else head.appendChild(mk(k, "side")); } }
+  $("#hero-plaque").replaceWith(mk("hero", "big"));
+  $("#ctl-plaque").replaceWith(mk("controls", "small"));
+}
+
+/* ---------- 3D risk map ----------
+   Hand-built canvas renderer (orthographic, painter's order) so the page has no WebGL or
+   CDN dependency and runs offline, e.g. at the venue. Geometry is in metres from 22.165N 113.555E. */
+const MAPD = META.map;
+const MAP = { metric: "risk", only: -1, zoom: 1, bearing: -1.2, pitch: 0.98, panX: 0, panY: 0, hover: -1, raf: 0,
+  orbit: false, visible: false, active: false, drag: null, W: 0, H: 0, dpr: 1, fit: 0.1, cells: [], hits: [], scale: {} };
+const MAP_DEF = { zoom: 1, bearing: -1.2, pitch: 0.98, panX: 0, panY: 0 };
+const NIGHT_GROUP = ["#62a8ff", "#ff9156", "#44d6a0"];
+const RAMP = [[0, [42, 88, 150]], [0.25, [46, 170, 170]], [0.5, [238, 206, 104]], [0.75, [245, 138, 72]], [1, [255, 72, 108]]];
+function ramp(t) {
+  t = Math.max(0, Math.min(1, t));
+  for (let i = 1; i < RAMP.length; i++) if (t <= RAMP[i][0]) { const [a, ca] = RAMP[i - 1], [b, cb] = RAMP[i], u = (t - a) / (b - a); return ca.map((v, k) => v + (cb[k] - v) * u); }
+  return RAMP[RAMP.length - 1][1];
+}
+const rgba = (c, f, a = 1) => `rgba(${Math.min(255, Math.round(c[0] * f))},${Math.min(255, Math.round(c[1] * f))},${Math.min(255, Math.round(c[2] * f))},${a})`;
+const RAMP_CSS = "linear-gradient(90deg," + RAMP.map(([t, c]) => `rgb(${c.join(",")}) ${t * 100}%`).join(",") + ")";
+
+function mapStats() {
+  const ps = RES.net.profiles;
+  return CAL.sectors.map(s => {
+    const xs = ps.filter(p => p.sector === s.key), n = xs.length || 1;
+    const f0 = xs.reduce((a, p) => a + 1 - p.p0, 0) / n, f1 = xs.reduce((a, p) => a + 1 - p.p1, 0) / n;
+    const staff = CAL.cost[s.cost].workers_per_est;
+    return { key: s.key, name: s.name, f0, f1, staff, risk: staff * f0, save: staff * (f0 - f1) };
+  });
+}
+function initMap() {
+  const xs = [], ys = [];
+  for (let i = 0; i < MAPD.pts.length; i += 3) { xs.push(MAPD.pts[i]); ys.push(MAPD.pts[i + 1]); }
+  MAP.wx = (Math.min(...xs) + Math.max(...xs)) / 2; MAP.wy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  MAP.cells = MAPD.cells.map(c => ({ x: c[0], y: c[1], n: c.slice(2), h: 0, t: 0, col: [60, 90, 140] }));
+  MAP.cells.forEach(c => { let best = null, bd = 1e9; for (const l of MAPD.labels) { const d = Math.hypot(l.p[0] - c.x, l.p[1] - c.y); if (d < bd) { bd = d; best = l; } } c.near = bd < 1500 ? best : null; });
+  const cv = $("#map3d"); MAP.cv = cv; MAP.ctx = cv.getContext("2d");
+  const box = $("#mapbox");
+  const resize = () => { const r = box.getBoundingClientRect(); MAP.dpr = Math.min(2, window.devicePixelRatio || 1); MAP.W = r.width; MAP.H = r.height;
+    cv.width = Math.round(r.width * MAP.dpr); cv.height = Math.round(r.height * MAP.dpr);
+    // when the hero text and side panel float over the map, fit the city into the gap between them
+    let l = 0, rr = r.width; const ht = $(".hero-text"), hs = $(".hero-side");
+    if (ht && hs && getComputedStyle($(".hero-in")).display !== "contents") { l = ht.getBoundingClientRect().right - r.left + 10; rr = hs.getBoundingClientRect().left - r.left - 10; }
+    MAP.vw = Math.max(200, rr - l); MAP.cx0 = l + MAP.vw / 2; MAP.cy0 = r.height * 0.55;
+    const b = MAP.vw / r.height < 1.15 ? -0.3 : -1.2; if (MAP_DEF.bearing !== b) { MAP_DEF.bearing = b; MAP.bearing = b; }
+    mapFit(); drawMap(); };
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(box); else addEventListener("resize", resize);
+  resize();
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => { MAP.visible = es[0].isIntersecting; if (MAP.visible) kickMap(); }, { threshold: 0.25 }).observe(box);
+  else MAP.visible = true;
+  setOrbit(!reduce);
+  // pointer: drag = rotate/tilt, shift- or right-drag = pan; wheel zoom only after a click on the map
+  cv.addEventListener("pointerdown", e => { MAP.active = true; setOrbit(false);
+    MAP.drag = { x: e.clientX, y: e.clientY, b: MAP.bearing, p: MAP.pitch, px: MAP.panX, py: MAP.panY, pan: e.button === 2 || e.shiftKey, touch: e.pointerType === "touch", moved: false };
+    try { cv.setPointerCapture(e.pointerId); } catch (_) {} });
+  cv.addEventListener("pointermove", e => {
+    const d = MAP.drag;
+    if (d) { const dx = e.clientX - d.x, dy = e.clientY - d.y; if (Math.abs(dx) + Math.abs(dy) > 3) d.moved = true;
+      if (d.pan) { MAP.panX = d.px + dx; MAP.panY = d.py + dy; }
+      else { MAP.bearing = d.b + dx * 0.008; if (!d.touch) MAP.pitch = Math.max(0.05, Math.min(1.2, d.p - dy * 0.006)); }
+      hideTip(); kickMap(); return; }
+    mapHover(e);
+  });
+  const end = () => { MAP.drag = null; };
+  cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+  cv.addEventListener("pointerleave", () => { MAP.active = false; if (MAP.hover !== -1) { MAP.hover = -1; drawMap(); } hideTip(); });
+  cv.addEventListener("contextmenu", e => e.preventDefault());
+  cv.addEventListener("wheel", e => { if (!MAP.active) return; e.preventDefault();
+    const r = cv.getBoundingClientRect(); mapZoom(Math.exp(-e.deltaY * 0.0015), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  cv.addEventListener("keydown", e => { const k = e.key; let used = true;
+    if (k === "ArrowLeft") MAP.bearing -= 0.12; else if (k === "ArrowRight") MAP.bearing += 0.12;
+    else if (k === "ArrowUp") MAP.pitch = Math.max(0.05, MAP.pitch - 0.08); else if (k === "ArrowDown") MAP.pitch = Math.min(1.2, MAP.pitch + 0.08);
+    else if (k === "+" || k === "=") mapZoom(1.25); else if (k === "-") mapZoom(0.8); else if (k === "0") mapReset(); else used = false;
+    if (used) { e.preventDefault(); setOrbit(false); kickMap(); } });
+  $("#map-orbit").onclick = () => setOrbit(!MAP.orbit);
+  $("#map-zin").onclick = () => { mapZoom(1.3); };
+  $("#map-zout").onclick = () => { mapZoom(1 / 1.3); };
+  $("#map-reset").onclick = mapReset;
+  document.querySelectorAll("#map-metric button").forEach(b => b.addEventListener("click", () => {
+    MAP.metric = b.dataset.m; document.querySelectorAll("#map-metric button").forEach(x => x.setAttribute("aria-pressed", x === b)); renderMap(); }));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawMap);
+  const T = MAPD.tour_share;
+  $("#map-note").innerHTML = `Shop locations: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">&copy; OpenStreetMap contributors</a> (ODbL), ${MAPD.n_shops.toLocaleString("en")} restaurants, caf&eacute;s and shops in the model's eight sectors, exported via the Overpass API (data as of ${MAPD.osm_base.slice(0, 10)}). OpenStreetMap records only part of Macao's businesses (DSEC counts 13,279 retail establishments alone in 2024), so the map shows <b>where</b> shops cluster, not how many exist. Restaurants within ${MAPD.tour_radius}&nbsp;m of a casino, tourist attraction, museum or heritage site in OpenStreetMap (${MAPD.n_anchors} sites) count as tourist-facing: ${Math.round(T * 100)}% of mapped restaurants. Each shop takes its sector's average closure probability across the 27 simulated profiles and DSEC's average staff per establishment (${CAL.cost.retail.workers_per_est} in retail, ${CAL.cost.restaurant.workers_per_est} in restaurants, 2024).`;
+}
+function setOrbit(on) { MAP.orbit = on; const b = $("#map-orbit"); b.setAttribute("aria-pressed", on); b.textContent = on ? "Pause orbit" : "Orbit"; kickMap(); }
+function mapReset() { Object.assign(MAP, MAP_DEF); mapFit(); kickMap(); }
+function mapZoom(f, sx, sy) {
+  const z = Math.max(0.6, Math.min(7, MAP.zoom * f)), r = z / MAP.zoom; if (sx == null) { sx = MAP.cx0; sy = MAP.cy0; }
+  const cx = MAP.cx0 + MAP.panX, cy = MAP.cy0 + MAP.panY;
+  MAP.panX = sx - r * (sx - cx) - MAP.cx0; MAP.panY = sy - r * (sy - cy) - MAP.cy0; MAP.zoom = z; kickMap();
+}
+function mapFit() {
+  // scale and centre so the central 98% of mapped shops fill the canvas at the default view
+  const c = Math.cos(MAP_DEF.bearing), s = Math.sin(MAP_DEF.bearing), cp = Math.cos(MAP_DEF.pitch);
+  if (MAP.wx0 == null) { MAP.wx0 = MAP.wx; MAP.wy0 = MAP.wy; }
+  const X = [], Y = [];
+  for (let i = 0; i < MAPD.pts.length; i += 3) { const x = MAPD.pts[i] - MAP.wx0, y = MAPD.pts[i + 1] - MAP.wy0; X.push(x * c - y * s); Y.push(x * s + y * c); }
+  X.sort((a, b) => a - b); Y.sort((a, b) => a - b);
+  const q = (A, f) => A[Math.floor(f * (A.length - 1))], x0 = q(X, 0.01), x1 = q(X, 0.99), y0 = q(Y, 0.01), y1 = q(Y, 0.99);
+  const xm = (x0 + x1) / 2, ym = (y0 + y1) / 2;
+  MAP.wx = MAP.wx0 + xm * c + ym * s; MAP.wy = MAP.wy0 - xm * s + ym * c;
+  MAP.fit = Math.min(MAP.vw * 0.92 / (x1 - x0), MAP.H * 0.62 / ((y1 - y0) * cp));
+}
+function proj(x, y, z) {
+  const xr = x * MAP.c - y * MAP.s, yr = x * MAP.s + y * MAP.c;
+  return [MAP.cx + MAP.k * xr, MAP.cy - MAP.k * (yr * MAP.cp + z * MAP.sp), yr];
+}
+function kickMap() { if (!MAP.raf && MAP.ctx) MAP.raf = requestAnimationFrame(tickMap); }
+function tickMap() {
+  MAP.raf = 0; let moving = false;
+  for (const c of MAP.cells) { const d = c.t - c.h; if (Math.abs(d) > 0.5) { c.h += d * 0.14; moving = true; } else c.h = c.t; }
+  if (MAP.orbit && MAP.visible && !document.hidden) { MAP.bearing += 0.0016; moving = true; }
+  drawMap();
+  if (moving) kickMap();
+}
+
+function renderMap() {
+  if (!RES || !MAP.ctx) return;
+  const st = mapStats(), only = MAP.only, risk = MAP.metric === "risk";
+  let mx = 0;
+  for (const c of MAP.cells) {
+    let jr = 0, js = 0, staff = 0, fw = 0, shops = 0;
+    c.n.forEach((k, i) => { if (!k || (only >= 0 && i !== only)) return; const s = st[i];
+      jr += k * s.risk; js += k * s.save; staff += k * s.staff; fw += k * s.staff * s.f0; shops += k; });
+    c.jr = jr; c.js = js; c.shops = shops; c.fail = staff ? fw / staff : 0; c.keep = staff ? js / staff : 0;
+    c.v = risk ? jr : js; mx = Math.max(mx, c.v);
+  }
+  // height scale is fixed at the first (default-scenario) render, so heights move with the sliders
+  const key = MAP.metric + ":" + only;
+  if (!MAP.scale[key]) MAP.scale[key] = mx > 0 ? 2400 / mx : 1;
+  const k = MAP.scale[key];
+  for (const c of MAP.cells) { c.t = c.v * k; c.col = ramp(risk ? c.fail / 0.8 : c.keep / 0.12); }
+  MAP.stats = st;
+  $("#map-legend").innerHTML = risk
+    ? `<div><b style="color:var(--ink)">Colour</b> &middot; chance a shop closes within 24 months, no subsidy</div><div class="ramp" style="background:${RAMP_CSS}"></div><div class="ticks"><span>0%</span><span>20%</span><span>40%</span><span>60%</span><span>80%+</span></div><div><b style="color:var(--ink)">Height</b> &middot; expected jobs lost among mapped shops</div>`
+    : `<div><b style="color:var(--ink)">Colour</b> &middot; share of jobs the ${(+RES.c.sub.toFixed(2))}% subsidy keeps</div><div class="ramp" style="background:${RAMP_CSS}"></div><div class="ticks"><span>0%</span><span>3%</span><span>6%</span><span>9%</span><span>12%+</span></div><div><b style="color:var(--ink)">Height</b> &middot; expected jobs kept among mapped shops</div>`;
+  renderMapSide(st);
+  kickMap();
+}
+function renderMapSide(st) {
+  const counts = new Array(st.length).fill(0);
+  for (let i = 2; i < MAPD.pts.length; i += 3) counts[MAPD.pts[i]]++;
+  const subLab = (+RES.c.sub.toFixed(2)) + "%";
+  let totR = 0, totS = 0;
+  let h = `<div class="ms-h"><span>Chance of closing in 24 months</span><span><span class="dotg" style="background:#8f897c"></span>none &rarr; <span class="dotg" style="background:var(--accent)"></span>${subLab}</span></div>`;
+  st.forEach((s, i) => { totR += counts[i] * s.risk; totS += counts[i] * s.save;
+    const g = NIGHT_GROUP[GROUP[s.key]];
+    h += `<button type="button" class="ms-row" data-i="${i}" aria-pressed="${MAP.only === i}"><div class="ms-top"><span class="nm"><span class="dotg" style="background:${g}"></span>${s.name.replace(" (Chinese food products)", "")}<span class="zh" lang="zh-Hant">${META.sectorZh[s.key]}</span></span><span class="n">${counts[i]}</span></div>
+      <div class="ms-bar"><span style="width:${(s.f0 * 100).toFixed(1)}%;background:#8f897c"></span><span style="width:${(s.f1 * 100).toFixed(1)}%;background:var(--accent)"></span></div>
+      <div class="ms-val">${Math.round(s.f0 * 100)}% &rarr; ${Math.round(s.f1 * 100)}%</div></button>`; });
+  h += `<div class="ms-tot"><span class="muted" style="font-size:0.74rem">${MAPD.n_shops.toLocaleString("en")} mapped shops. Click a sector to show only its shops.</span></div>`;
+  $("#hero-stats").innerHTML = `<div><b>${Math.round(totR).toLocaleString("en")}</b><span>jobs at risk in the mapped shops</span></div><div><b>${Math.round(totS)}</b><span>kept by the ${subLab} subsidy</span></div><div><b>${Math.round(totR * RES.net.daly.total)}</b><span>DALYs of health burden at risk</span></div>`;
+  const side = $("#map-side"); side.innerHTML = h;
+  side.querySelectorAll(".ms-row").forEach(b => b.onclick = () => { const i = +b.dataset.i; MAP.only = MAP.only === i ? -1 : i; renderMap(); });
+}
+
+function drawMap() {
+  const ctx = MAP.ctx; if (!ctx || !MAP.W) return;
+  const W = MAP.W, H = MAP.H;
+  ctx.setTransform(MAP.dpr, 0, 0, MAP.dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+  MAP.c = Math.cos(MAP.bearing); MAP.s = Math.sin(MAP.bearing); MAP.cp = Math.cos(MAP.pitch); MAP.sp = Math.sin(MAP.pitch);
+  MAP.k = MAP.fit * MAP.zoom; MAP.cx = MAP.cx0 + MAP.panX; MAP.cy = MAP.cy0 + MAP.panY;
+  const ox = MAP.wx, oy = MAP.wy;
+  // ground grid, 500 m
+  ctx.fillStyle = "rgba(242,237,227,0.13)";
+  for (let gx = -4000; gx <= 4000; gx += 500) for (let gy = -7000; gy <= 7000; gy += 500) { const [x, y] = proj(gx, gy, 0); if (x > -5 && x < W + 5 && y > -5 && y < H + 5) ctx.fillRect(x - 0.75, y - 0.75, 1.5, 1.5); }
+  // coastline: soft glow then a crisp line
+  for (const [lw, col] of [[5, "rgba(242,215,180,0.07)"], [1.2, "rgba(242,237,227,0.55)"]]) {
+    ctx.lineWidth = lw; ctx.strokeStyle = col; ctx.lineJoin = "round"; ctx.beginPath();
+    for (const w of MAPD.coast) { for (let i = 0; i < w.length; i += 2) { const [x, y] = proj(w[i] - ox, w[i + 1] - oy, 0); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); } }
+    ctx.stroke();
+  }
+  // every mapped shop as a ground dot, coloured by sector group
+  for (let i = 0; i < MAPD.pts.length; i += 3) { const si = MAPD.pts[i + 2]; if (MAP.only >= 0 && si !== MAP.only) continue;
+    const [x, y] = proj(MAPD.pts[i] - ox, MAPD.pts[i + 1] - oy, 0); ctx.fillStyle = NIGHT_GROUP[GROUP[CAL.sectors[si].key]]; ctx.globalAlpha = 0.55; ctx.fillRect(x - 1, y - 1, 2, 2); }
+  ctx.globalAlpha = 1;
+  // columns, far to near
+  const a = MAPD.cell * 0.4, order = [];
+  MAP.cells.forEach((c, i) => { if (c.h > 1 || c.t > 1) order.push([(c.x - ox) * MAP.s + (c.y - oy) * MAP.c, i]); });
+  order.sort((p, q) => q[0] - p[0]);
+  const NRM = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+  MAP.hits = [];
+  for (const [, i] of order) {
+    const c = MAP.cells[i], x = c.x - ox, y = c.y - oy, h = Math.max(c.h, 2);
+    const cr = [[x - a, y - a], [x + a, y - a], [x + a, y + a], [x - a, y + a]];
+    const B = cr.map(([u, v]) => proj(u, v, 0)), T = cr.map(([u, v]) => proj(u, v, h));
+    const hl = i === MAP.hover, polys = [];
+    // ground glow
+    ctx.fillStyle = rgba(c.col, 1, 0.12); ctx.beginPath(); ctx.ellipse(B[0][0] / 4 + B[1][0] / 4 + B[2][0] / 4 + B[3][0] / 4, B[0][1] / 4 + B[1][1] / 4 + B[2][1] / 4 + B[3][1] / 4, a * 1.6 * MAP.k, a * 1.6 * MAP.k * Math.max(0.25, MAP.cp), 0, 0, 7); ctx.fill();
+    for (let f = 0; f < 4; f++) {
+      const [nx, ny] = NRM[f]; if (nx * MAP.s + ny * MAP.c >= 0) continue;
+      const lit = 0.62 - 0.22 * (nx * MAP.c - ny * MAP.s), j = (f + 1) % 4;
+      const poly = [B[f], B[j], T[j], T[f]]; polys.push(poly);
+      const g = ctx.createLinearGradient(0, B[f][1], 0, T[f][1]); g.addColorStop(0, rgba(c.col, lit * 0.55, 0.95)); g.addColorStop(1, rgba(c.col, lit * (hl ? 1.35 : 1.05), 0.97));
+      ctx.fillStyle = g; ctx.beginPath(); poly.forEach(([px, py], q) => q ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = rgba(c.col, hl ? 1.45 : 1.18); ctx.beginPath(); T.forEach(([px, py], q) => q ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = hl ? "rgba(255,255,255,0.95)" : rgba(c.col, 1.5, 0.55); ctx.lineWidth = hl ? 1.4 : 0.6; ctx.stroke();
+    polys.push(T); MAP.hits.push([i, polys]);
+  }
+  // labels
+  ctx.textBaseline = "alphabetic";
+  const boxes = [], free = (x0, y0, w, h) => { if (boxes.some(b => x0 < b[0] + b[2] && b[0] < x0 + w && y0 < b[1] + b[3] && b[1] < y0 + h)) return false; boxes.push([x0, y0, w, h]); return true; };
+  for (const l of MAPD.labels) {
+    const [x, y] = proj(l.p[0] - ox, l.p[1] - oy, 0); if (x < -60 || x > W + 60 || y < -20 || y > H + 20) continue;
+    if (l.kind === "area") {
+      boxes.push([x - 50, y - 16, 100, 32]);
+      ctx.textAlign = "center"; ctx.font = '700 15px ' + getComputedStyle(document.body).getPropertyValue("--f-zh");
+      ctx.lineWidth = 4; ctx.strokeStyle = "rgba(14,13,11,0.85)"; ctx.lineJoin = "round"; ctx.strokeText(l.zh, x, y);
+      ctx.fillStyle = "rgba(242,237,227,0.95)"; ctx.fillText(l.zh, x, y);
+      ctx.font = "600 9.5px " + getComputedStyle(document.body).getPropertyValue("--f-body");
+      const sub = (l.en === l.pt ? l.en : l.en + " \u00b7 " + l.pt).toUpperCase(); ctx.lineWidth = 3; ctx.strokeText(sub, x, y + 13);
+      ctx.fillStyle = "rgba(198,191,177,0.9)"; ctx.fillText((l.en === l.pt ? l.en : l.en + " \u00b7 " + l.pt).toUpperCase(), x, y + 13);
+    } else if (MAP.zoom >= 0.95) {
+      const ty = y - 26;
+      ctx.font = "600 10.5px " + getComputedStyle(document.body).getPropertyValue("--f-body");
+      const zhf = "700 11px " + getComputedStyle(document.body).getPropertyValue("--f-zh");
+      ctx.font = zhf; const wz = ctx.measureText(l.zh).width; ctx.font = "600 10px " + getComputedStyle(document.body).getPropertyValue("--f-body"); const we = ctx.measureText(l.en).width;
+      const wTot = wz + we + 16; if (!free(x - wTot / 2, ty - 12, wTot, 17)) continue;
+      ctx.strokeStyle = "rgba(242,237,227,0.45)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, ty + 5); ctx.stroke();
+      ctx.fillStyle = "#f2ede3"; ctx.beginPath(); ctx.arc(x, y, 2.2, 0, 7); ctx.fill();
+      ctx.fillStyle = "rgba(14,13,11,0.72)"; ctx.beginPath(); (ctx.roundRect ? ctx.roundRect(x - wTot / 2, ty - 12, wTot, 17, 4) : ctx.rect(x - wTot / 2, ty - 12, wTot, 17)); ctx.fill();
+      ctx.textAlign = "left"; ctx.font = zhf; ctx.fillStyle = "#ffffff"; ctx.fillText(l.zh, x - wTot / 2 + 6, ty);
+      ctx.font = "600 10px " + getComputedStyle(document.body).getPropertyValue("--f-body"); ctx.fillStyle = "rgba(210,203,190,0.95)"; ctx.fillText(l.en, x - wTot / 2 + 10 + wz, ty);
+    }
+  }
+  // compass and 1 km scale bar
+  const RX = MAP.cx0 + MAP.vw / 2, nx = -MAP.s, ny = MAP.c, ex = RX - 30, ey = H - 70, L = 15, sx = nx, sy = -ny * MAP.cp, n = Math.hypot(sx, sy) || 1;
+  ctx.strokeStyle = "rgba(198,191,177,0.5)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(ex, ey, 17, 0, 7); ctx.stroke();
+  ctx.fillStyle = "#ff6b7d"; ctx.beginPath(); ctx.moveTo(ex + sx / n * L, ey + sy / n * L); ctx.lineTo(ex - sy / n * 4, ey + sx / n * 4); ctx.lineTo(ex + sy / n * 4, ey - sx / n * 4); ctx.closePath(); ctx.fill();
+  ctx.font = "700 10px " + getComputedStyle(document.body).getPropertyValue("--f-body"); ctx.textAlign = "center"; ctx.fillStyle = "#f2ede3"; ctx.fillText("N", ex + sx / n * 26, ey + sy / n * 26 + 3);
+  const km = MAP.k * 1000, bx = RX - 16 - km, by = H - 30;
+  ctx.strokeStyle = "rgba(242,237,227,0.75)"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(bx, by - 4); ctx.lineTo(bx, by); ctx.lineTo(bx + km, by); ctx.lineTo(bx + km, by - 4); ctx.stroke();
+  ctx.font = "500 10px " + getComputedStyle(document.body).getPropertyValue("--f-mono"); ctx.fillStyle = "rgba(242,237,227,0.8)"; ctx.fillText("1 km", bx + km / 2, by - 6);
+  ctx.textAlign = "right"; ctx.fillStyle = "rgba(198,191,177,0.7)"; ctx.font = "500 9.5px " + getComputedStyle(document.body).getPropertyValue("--f-body"); ctx.fillText("\u00a9 OpenStreetMap contributors", W - 10, H - 9);
+}
+function inPoly(px, py, P) { let ins = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j];
+  if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) ins = !ins; } return ins; }
+function mapHover(e) {
+  const r = MAP.cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  let hit = -1;
+  for (let k = MAP.hits.length - 1; k >= 0 && hit < 0; k--) if (MAP.hits[k][1].some(P => inPoly(px, py, P))) hit = MAP.hits[k][0];
+  if (hit !== MAP.hover) { MAP.hover = hit; if (!MAP.raf) drawMap(); }
+  if (hit < 0) { hideTip(); return; }
+  const c = MAP.cells[hit], st = MAP.stats;
+  const parts = c.n.map((k, i) => [k, i]).filter(([k, i]) => k && (MAP.only < 0 || i === MAP.only)).sort((p, q) => q[0] - p[0]).map(([k, i]) => `${k} ${st[i].name.replace(" (Chinese food products)", "").toLowerCase()}`);
+  showTip(e, `<b>200 m block${c.near ? " near " + c.near.en : ""}</b><br>${c.shops} mapped shop${c.shops === 1 ? "" : "s"}: ${parts.join(", ")}<br>Chance a shop closes, no subsidy: <b>${Math.round(c.fail * 100)}%</b><br>Expected jobs lost: <b>${c.jr.toFixed(1)}</b> &middot; kept by the subsidy: <b>${c.js.toFixed(1)}</b><br>Health burden of those losses: about <b>${(c.jr * RES.net.daly.total).toFixed(2)}</b> DALYs`);
+}
+/* ---------- the story: eight steps, each answering one question and raising the next ---------- */
+const STEPS = [
+  { id: "map", q: "How big is the risk?", next: "How does the shock travel?" },
+  { id: "propagation", q: "How does the shock travel?" },
+  { id: "network", sub: 2, q: "The evidence: how tightly Macao's sectors move together", next: "So whom does a flat subsidy actually save?" },
+  { id: "hump", q: "Whom does a flat subsidy actually save?", next: "Then whom should it help first?" },
+  { id: "ranking", q: "Whom should it help first?", next: "The money is there. What rate should each firm get?" },
+  { id: "design", q: "What rate should each firm get?", next: "How would a bank officer apply it?" },
+  { id: "applicant", q: "How would a bank officer apply it?", next: "What is saved besides jobs?" },
+  { id: "health", q: "What is saved besides jobs?", next: "Why trust these numbers?" },
+  { id: "validation", q: "Why trust these numbers?", next: "Every source, every assumption" },
+  { id: "method", sub: 8, q: "Every source, every assumption" },
+];
+const MAIN = STEPS.filter(s => !s.sub);
+function initTour() {
+  STEPS.forEach(s => {
+    const sec = document.getElementById(s.id); if (!sec) return;
+    const n = s.sub || MAIN.indexOf(s) + 1;
+    const h2 = s.id !== "map" && !s.sub && sec.querySelector(".head h2");
+    if (h2) { const c = document.createElement("span"); c.className = "chap-n"; c.innerHTML = `${n}<i>/${MAIN.length}</i>`; h2.prepend(c); }
+    if (s.next) {
+      const f = document.createElement("div"); f.className = "chap-foot";
+      f.innerHTML = `<p class="chap-take" id="take-${s.id}"></p><button type="button" class="chap-next">Next \u00b7 ${s.next} <span aria-hidden="true">\u2193</span></button>`;
+      const rest = STEPS.slice(STEPS.indexOf(s) + 1), target = (rest.find(x => !x.sub) || rest[0]).id;
+      f.querySelector("button").onclick = () => document.getElementById(target).scrollIntoView({ behavior: "smooth", block: "start" });
+      if (s.id === "map") $(".hero-text").appendChild(f); else sec.appendChild(f);
+    }
+  });
+  const kick = $("#hero-kicker"); if (kick) kick.textContent = `1/${MAIN.length} \u00b7 ${MAIN[0].q}`;
+  // floating progress bar
+  const bar = $("#tourbar");
+  bar.innerHTML = `<button type="button" class="tb-btn" id="tb-prev" aria-label="Previous step">\u2190</button>
+    <div class="tb-dots">${MAIN.map((s, i) => `<button type="button" class="tb-dot" data-i="${i}" aria-label="Step ${i + 1}: ${s.q}"></button>`).join("")}</div>
+    <span class="tb-lab" id="tb-lab"></span><button type="button" class="tb-btn" id="tb-next" aria-label="Next step">\u2192</button>`;
+  const go = i => { const s = MAIN[Math.max(0, Math.min(MAIN.length - 1, i))]; document.getElementById(s.id).scrollIntoView({ behavior: "smooth", block: "start" }); };
+  bar.querySelectorAll(".tb-dot").forEach(b => b.onclick = () => go(+b.dataset.i));
+  $("#tb-prev").onclick = () => go(TOUR.cur - 1); $("#tb-next").onclick = () => go(TOUR.cur + 1);
+  let tick = 0;
+  const upd = () => { tick = 0;
+    let cur = 0; MAIN.forEach((s, i) => { const r = document.getElementById(s.id).getBoundingClientRect(); if (r.top < innerHeight * 0.45) cur = i; });
+    // sub-sections count as their parent step
+    TOUR.cur = cur; bar.hidden = scrollY < innerHeight * 0.6;
+    bar.querySelectorAll(".tb-dot").forEach((b, i) => { b.classList.toggle("on", i === cur); b.classList.toggle("done", i < cur); });
+    $("#tb-lab").innerHTML = `<b>${cur + 1}/${MAIN.length}</b> ${MAIN[cur].q}`; };
+  addEventListener("scroll", () => { if (!tick) tick = requestAnimationFrame(upd); }, { passive: true }); upd();
+}
+const TOUR = { cur: 0 };
+const SECT_MANY = { restaurant_tourist: "tourist-facing restaurants", restaurant_local: "neighbourhood restaurants", jewellery_watches: "jewellery and watch shops", leather_goods: "leather-goods shops", adult_clothing: "clothing shops", chinese_food_products: "souvenir-food shops", pharmacies: "pharmacies", supermarkets: "supermarkets" };
+const SECT_ONE = { restaurant_tourist: "a tourist-facing restaurant", restaurant_local: "a neighbourhood restaurant", jewellery_watches: "a jewellery shop", leather_goods: "a leather-goods shop", adult_clothing: "a clothing shop", chinese_food_products: "a souvenir-food shop", pharmacies: "a pharmacy", supermarkets: "a supermarket" };
+function renderTour() {
+  if (!RES) return;
+  const set = (id, html) => { const e = $("#take-" + id); if (e) e.innerHTML = html; };
+  const ps = RES.net.profiles, c = RES.c, pct0 = x => Math.round(x * 100) + "%";
+  // 1. map
+  if (MAP.stats) {
+    const counts = new Array(MAP.stats.length).fill(0); for (let i = 2; i < MAPD.pts.length; i += 3) counts[MAPD.pts[i]]++;
+    const jobs = MAP.stats.map((s, i) => counts[i] * s.risk), tot = jobs.reduce((a, b) => a + b, 0), k = jobs.indexOf(Math.max(...jobs));
+    set("map", `<b>${Math.round(tot).toLocaleString("en")} jobs</b> at risk among ${MAPD.n_shops.toLocaleString("en")} mapped shops; the largest share, ${pct0(jobs[k] / tot)}, in ${SECT_MANY[MAP.stats[k].key]}.`);
+  }
+  // 2. propagation
+  const L = RES.net.shock, vars = CONN.variables, io = vars.indexOf(c.origin), q = Math.min(L.length - 1, c.dur - 1);
+  const hit = vars.map((v, j) => [j, Math.exp(L[q][j]) - 1]).filter(([j]) => j !== io).sort((a, b) => a[1] - b[1]).slice(0, 3);
+  set("network", `In quarter ${q + 1}: ${hit.map(([j, v]) => `${META.varShort[vars[j]]} <b>${Math.round(v * 100)}%</b>`).join(", ")}. Total connectedness is ${CONN.total.toFixed(1)}%. The scheme's firm-by-firm check sees none of this coming.`);
+  // 3. who gains
+  const tc = ps.reduce((a, p) => a + p.expCost, 0), tj = ps.reduce((a, p) => a + p.jobsSaved, 0);
+  const z = ZONES.map(zz => { const xs = ps.filter(p => p.p0 >= zz.lo && p.p0 < zz.hi); return [xs.reduce((a, p) => a + p.expCost, 0) / tc, tj > 0 ? xs.reduce((a, p) => a + p.jobsSaved, 0) / tj : 0]; });
+  set("hump", `Firms safe without help take <b>${pct0(z[2][0])}</b> of a flat subsidy and yield ${pct0(z[2][1])} of the jobs saved. Firms in the balance take ${pct0(z[1][0])} and yield <b>${pct0(z[1][1])}</b>.`);
+  // 4. ranking
+  const al = SMESim.allocation(ps, "jobsPerMOPm", 0.25), rn = rankOf(ps, "jobsPerMOPm"), rf = rankOf(RES.firm.profiles, "jobsPerMOPm");
+  let missed = 0; for (let i = 0; i < ps.length; i++) if (rn[i] <= 20 && rf[i] > 20) missed++;
+  const thr = priorityThreshold(ps), seats = CAL.sectors.map(s => [s, ps.filter(p => p.sector === s.key && p.jobsPerMOPm >= thr && p.delta > 0).length]).filter(x => x[1]).sort((a, b) => b[1] - a[1]);
+  set("ranking", `Funding the best-ranked profiles first saves <b>${al.ratio ? al.ratio.toFixed(1) : "\u2013"}\u00d7</b> the jobs per pataca of the average applicant. A firm-by-firm view would miss <b>${missed}</b> of the top 20. Priority seats out of 27 profiles each: ${seats.map(([s, n]) => `${SECT_MANY[s.key]} ${n}`).join(", ")}.`);
+  // 5. design (precomputed, default scenario)
+  const T = META.tiered, d = T.by_share.find(x => x.topShare === 0.25), U = T.uptake;
+  set("design", `All interest for the top quarter, 3% for the rest: <b>+${Math.round(d.gain * 100)}% jobs</b> at <b>${Math.round(d.costVsFlat * 100)}%</b> of the flat-rate cost. The pool is not the limit: MOP ${(U.loans_mop / 1e9).toFixed(1)}bn of ${(U.cap_mop / 1e9).toFixed(0)}bn used by 31 Mar 2026.`);
+  // 6. applicant
+  if (AP.last) { const { a, b, E, priority } = AP.last, arm = AP.arm === "full" ? b : a;
+    set("applicant", `Example: ${SECT_ONE[a.sector]} with ${E} staff and ${a.buffer} days of cash \u2192 <b>${priority ? "priority tier" : "standard tier"}</b>. Out of 100 such firms, ${Math.max(0, Math.round(arm.p1 * 100) - Math.round(a.p0 * 100))} more stay open with ${AP.arm === "full" ? "all interest covered" : "the flat rate"}. Three answers on the form are enough.`); }
+  // 7. health
+  const dd = RES.net.daly, P = Object.assign({}, CAL.params, RES.base.params), jT = al.targeted * 10, jU = al.untargeted * 10;
+  set("health", `MOP 10m, targeted, keeps <b>${Math.round(jT)} jobs</b>: about ${(jT * P.excess_psych_prev).toFixed(1)} fewer depression episodes and ${(jT * P.baseline_mortality * P.excess_mortality_rr).toFixed(3)} fewer deaths, <b>${(jT * dd.total).toFixed(2)} DALYs</b>, ${(jT / Math.max(jU, 1e-9)).toFixed(1)}\u00d7 the untargeted gain.`);
+  // 8. validation
+  const B = META.backtest.covid;
+  set("validation", `Estimated on pre-2020 data only, the model ranked the COVID-era sector losses with a correlation of <b>${B.spearman.toFixed(2)}</b>. It does not beat a no-change rule in ordinary quarters, so it is a stress test, not a forecaster.`);
+}
+
+/* ---------- wiring ---------- */
+$("#hero-shock").addEventListener("input", e => { $("#shock").value = e.target.value; schedule(); });
+["origin", "shock", "dur", "rec", "noise", "sub", "cap", "loanm", "spread", "dw", "pdur", "mrr"].forEach(id => $("#" + id).addEventListener("input", schedule));
+document.querySelectorAll(".seg button[data-metric]").forEach(b => b.addEventListener("click", () => {
+  state.metric = b.dataset.metric; document.querySelectorAll(".seg button[data-metric]").forEach(x => x.setAttribute("aria-pressed", x === b)); renderKPIs(); renderTable(); renderHealth(); }));
+$("#more").onclick = () => { state.showAll = !state.showAll; renderTable(); };
+$("#reset").onclick = () => { for (const k in DEF) { const el = $("#" + k); if (el.type === "checkbox") el.checked = DEF[k]; else el.value = DEF[k]; } schedule(); };
+initPlaques(); initTour(); initMap(); initApplicant(); initProp(); renderFilters(); renderNetwork(); renderRolling(); renderDY(); renderDYMatrix(); renderSources(); renderDesign(); renderValidation();
+compute(); $("#status").textContent = "Default scenario: scheme parameters, visitors \u221225% for 4 quarters.";
+</script>

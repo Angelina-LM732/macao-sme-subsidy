@@ -1,0 +1,365 @@
+{
+ "cost": {
+  "retail": {
+   "label": "Retail trade establishments",
+   "cogs_share": 0.6133,
+   "wage_share": 0.1019,
+   "opex_share": 0.1934,
+   "margin": 0.0914,
+   "rev_per_worker_month": 145427,
+   "workers_per_est": 5.41,
+   "dsec_ids": [
+    8542,
+    8543,
+    8544,
+    8545,
+    8546,
+    8547
+   ],
+   "year": 2024
+  },
+  "restaurant": {
+   "label": "Restaurants and similar establishments",
+   "cogs_share": 0.3531,
+   "wage_share": 0.34,
+   "opex_share": 0.3106,
+   "margin": -0.0037,
+   "rev_per_worker_month": 33162,
+   "workers_per_est": 7.67,
+   "dsec_ids": [
+    30065,
+    30071,
+    30077,
+    30083,
+    30089,
+    30095
+   ],
+   "year": 2024
+  }
+ },
+ "sectors": [
+  {
+   "key": "restaurant_tourist",
+   "name": "Restaurant (tourist-facing)",
+   "zh": "餐饮（游客区）",
+   "cost": "restaurant",
+   "mix": {
+    "visitor_fnb": 1
+   },
+   "mix_note": "DSEC visitor F&B spending series"
+  },
+  {
+   "key": "restaurant_local",
+   "name": "Restaurant (neighbourhood)",
+   "zh": "餐饮（社区）",
+   "cost": "restaurant",
+   "mix": {
+    "visitor_fnb": 0.244,
+    "supermarkets": 0.756
+   },
+   "mix_note": "visitor share 24%: the two restaurant types average to the DSEC tourism ratio 62.2% (2024)"
+  },
+  {
+   "key": "jewellery_watches",
+   "name": "Jewellery & watches",
+   "zh": "珠宝钟表",
+   "cost": "retail",
+   "mix": {
+    "jewellery_watches": 1
+   }
+  },
+  {
+   "key": "leather_goods",
+   "name": "Leather goods",
+   "zh": "皮具",
+   "cost": "retail",
+   "mix": {
+    "leather_goods": 1
+   }
+  },
+  {
+   "key": "adult_clothing",
+   "name": "Clothing",
+   "zh": "成人服装",
+   "cost": "retail",
+   "mix": {
+    "adult_clothing": 1
+   }
+  },
+  {
+   "key": "chinese_food_products",
+   "name": "Souvenir food (Chinese food products)",
+   "zh": "手信食品",
+   "cost": "retail",
+   "mix": {
+    "chinese_food_products": 1
+   }
+  },
+  {
+   "key": "pharmacies",
+   "name": "Pharmacy",
+   "zh": "药房",
+   "cost": "retail",
+   "mix": {
+    "pharmacies": 1
+   }
+  },
+  {
+   "key": "supermarkets",
+   "name": "Supermarket / grocery",
+   "zh": "超市杂货",
+   "cost": "retail",
+   "mix": {
+    "supermarkets": 1
+   }
+  }
+ ],
+ "params": {
+  "subsidy_rate": 0.04,
+  "loan_cap": 5000000,
+  "subsidy_term_months": 36,
+  "max_employees": 100,
+  "prime_rate": 0.0525,
+  "loan_spread": 0.01,
+  "loan_months_of_fixed_cost": 11,
+  "interest_only": true,
+  "proceeds_as_cash": false,
+  "horizon_months": 24,
+  "idio_sd": 0,
+  "idio_rho": 0,
+  "validation_delinquency": 0.085,
+  "default_shock_pct": -25,
+  "default_origin": "visitors",
+  "default_duration_q": 4,
+  "default_recovery_q": 4,
+  "sizes": [
+   3,
+   10,
+   40
+  ],
+  "buffers": [
+   13,
+   27,
+   62
+  ],
+  "buffer_in_days": true,
+  "margin_sd": {
+   "retail": 0.0244,
+   "restaurant": 0.0623
+  },
+  "margin_shifts": [
+   -0.0244,
+   0,
+   0.0244
+  ],
+  "excess_psych_prev": 0.0932,
+  "excess_psych_prev_intl": 0.18,
+  "dw_depression": 0.396,
+  "psych_duration_years": 0.5,
+  "baseline_mortality": 0.00088,
+  "excess_mortality_rr": 0.5,
+  "yll_per_death": 43.5
+ },
+ "derived": {
+  "tourism_ratio_restaurants_2024": 0.622,
+  "neighbourhood_visitor_share": 0.244,
+  "margins_by_year": {
+   "2015": {
+    "retail": 0.089,
+    "restaurant": 0.0094
+   },
+   "2016": {
+    "retail": 0.0931,
+    "restaurant": 0.014
+   },
+   "2017": {
+    "retail": 0.1074,
+    "restaurant": 0.0176
+   },
+   "2018": {
+    "retail": 0.0887,
+    "restaurant": 0.023
+   },
+   "2019": {
+    "retail": 0.0844,
+    "restaurant": 0.0293
+   },
+   "2020": {
+    "retail": 0.0379,
+    "restaurant": -0.1096
+   },
+   "2021": {
+    "retail": 0.0893,
+    "restaurant": -0.0873
+   },
+   "2022": {
+    "retail": 0.0503,
+    "restaurant": -0.1404
+   },
+   "2023": {
+    "retail": 0.1206,
+    "restaurant": -0.006
+   },
+   "2024": {
+    "retail": 0.0914,
+    "restaurant": -0.0037
+   }
+  },
+  "avg_scheme_loan": 2259215,
+  "avg_fixed_cost_per_establishment": 206266,
+  "loan_months_exact": 10.95,
+  "subsidy_to_loan_ratio": 0.121,
+  "baseline_mortality_from_45q15": 0.00088,
+  "yll": 43.5,
+  "visitor_share_2025": {
+   "jewellery_watches": 0.414,
+   "leather_goods": 0.375,
+   "adult_clothing": 0.57
+  },
+  "model_exposure": {
+   "jewellery_watches": 0.56,
+   "leather_goods": 0.562,
+   "adult_clothing": 0.585
+  },
+  "exposure_scale_2025": {
+   "jewellery_watches": 0.739,
+   "leather_goods": 0.667,
+   "adult_clothing": 0.974
+  },
+  "depression_korea": {
+   "odds_ratio": 1.78,
+   "baseline": 0.16,
+   "unemployed": 0.2532,
+   "excess": 0.0932
+  },
+  "validation_failure": 0.1441
+ },
+ "sources": [
+  {
+   "item": "Subsidy 4% p.a., loan cap MOP 5m, up to 3 years, SME with at most 100 staff, MOP 10bn pool",
+   "basis": "Scheme terms",
+   "source": "Macao News on the DSEDT scheme",
+   "url": "https://macaonews.org/news/business/macau-sme-loans-economy-macao/",
+   "type": "policy"
+  },
+  {
+   "item": "Scheme continued in the 2026 Policy Address (18 Nov 2025)",
+   "basis": "Policy anchor",
+   "source": "HRO summary of the 2026 Policy Address",
+   "url": "https://www.humanresourcesonline.net/key-highlights-from-macao-s-2026-policy-address",
+   "type": "policy"
+  },
+  {
+   "item": "Prime rate 5.25% p.a.",
+   "basis": "Latest bank notice found (ICBC Macau, effective 3 Nov 2025; HSBC had cut to 5.375% on 24 Sep 2025). AMCM composite funding cost barely moved in 2026 (1.16% to 1.15%, Q1 to Q2), so no sign of a further cut.",
+   "source": "ICBC (Macau) notice; AMCM composite interest rate Q2 2026",
+   "url": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/icbc_macau/pdf/2025/notice_1031.pdf",
+   "type": "finance"
+  },
+  {
+   "item": "Bank rate = prime + 1.0pp",
+   "basis": "Only 45% of new SME credit is collateralised (AMCM, H1 2026), so most SME credit is unsecured and priced above prime. The subsidy pays the full 4% either way; the spread only changes the part firms pay, and the sensitivity table shows results barely move between +0 and +3pp.",
+   "source": "AMCM SME credit, H1 2026",
+   "url": "https://www.gov.mo/en/?p=406590",
+   "type": "calibrated"
+  },
+  {
+   "item": "Loan size = 11 months of fixed costs (cap MOP 5m)",
+   "basis": "Scheme average loan MOP 2.26m (MOP 3.8bn over 1,682 approvals, to 21 Jan 2026) divided by the average establishment's monthly fixed cost MOP 206k (DSEC 2024 retail and restaurant surveys) = 11.0 months.",
+   "source": "DSEDT reply to the Legislative Assembly, Feb 2026",
+   "url": "https://al.gov.mo/uploads/attachment/2026-02/d1eb1ecf3391a55ca2a290b18ce30038.pdf",
+   "type": "calibrated"
+  },
+  {
+   "item": "Loans are interest-only credit lines, already drawn and spent",
+   "basis": "AMCM reports SME lending as credit limits with an 84.1% utilisation rate, i.e. mostly revolving lines that are drawn and used, so loan proceeds are not counted as spare cash; the firm carries the debt and the subsidy cuts its interest bill. DSEDT's approved subsidy (MOP 460m on MOP 3.8bn = 12.1%) equals 4% x 3 years on the full balance.",
+   "source": "AMCM SME credit, H1 2026; DSEDT reply, Feb 2026",
+   "url": "https://www.gov.mo/en/?p=406590",
+   "type": "calibrated"
+  },
+  {
+   "item": "Cash buffer profiles: 13 / 27 / 62 days of normal outflows",
+   "basis": "25th percentile, median and 75th percentile cash buffer days of 600,000 US small businesses (restaurants' median: 16 days). No comparable distribution is published for Macao or Hong Kong SMEs (a 2020 HKGCC poll only reports that 42% of SMEs expected to last up to six months without relief), so the sensitivity table halves and doubles these buffers.",
+   "source": "JPMorgan Chase Institute, Cash Flows, Balances, and Buffer Days (2016)",
+   "url": "https://www.jpmorganchase.com/institute/all-topics/business-growth-and-entrepreneurship/report-cash-flows-balances-and-buffer-days",
+   "type": "evidence"
+  },
+  {
+   "item": "Margin profiles: sector margin -/+ 2.4pp (retail), -/+ 6.2pp (restaurants)",
+   "basis": "One standard deviation of each sector's aggregate margin across DSEC survey years 2015-2024, so a weak or strong profile looks like the sector in a bad or good year.",
+   "source": "DSEC retail and restaurant surveys (IDs 8544-8547, 30077-30095)",
+   "url": "",
+   "type": "data"
+  },
+  {
+   "item": "No separate firm-level revenue noise",
+   "basis": "Revenue uncertainty comes only from DSEC sector data (bootstrapped VAR residuals); firm differences come from the margin and cash-buffer profiles. Adding 8% monthly firm noise changed normal-times failure by only 0.3pp, so it was removed rather than assumed.",
+   "source": "Model test",
+   "url": "",
+   "type": "calibrated"
+  },
+  {
+   "item": "Validation: normal-times failure",
+   "basis": "With no shock and no subsidy, the average profile's 24-month failure rate is 14.4%, against an SME loan delinquency ratio of 8.5% at end-June 2026. Same order of magnitude; the model is somewhat pessimistic because restaurant profiles inherit the sector's negative 2024 margin.",
+   "source": "AMCM SME credit, H1 2026",
+   "url": "https://www.gov.mo/en/?p=406590",
+   "type": "calibrated"
+  },
+  {
+   "item": "Neighbourhood restaurants: 24% visitor demand, rest local (supermarket sales as proxy)",
+   "basis": "DSEC Tourism Satellite Account: visitors account for 62.2% of restaurant value added (2024). With tourist-facing restaurants at 100%, the neighbourhood type is set so the two average to the industry figure.",
+   "source": "DSEC Tourism Satellite Account, ID 64216",
+   "url": "",
+   "type": "data"
+  },
+  {
+   "item": "Staff sizes 3 / 10 / 40",
+   "basis": "DSEC 2024 averages are 5.4 persons per retail and 7.7 per restaurant establishment; 40 represents larger SMEs under the scheme's 100-staff limit.",
+   "source": "DSEC retail and restaurant surveys (IDs 8542-8543, 30065, 30071)",
+   "url": "",
+   "type": "data"
+  },
+  {
+   "item": "Excess depression after job loss: 9.3 percentage points",
+   "basis": "East Asian evidence used as the default: in the Korea Welfare Panel (7,368 adults), moving from permanent work to unemployment raised the odds of depression 1.78 times. Applied to the 16% baseline among the employed, that is 25.3% vs 16%. The international meta-analysis (34% vs 16%, i.e. 18 points) is kept as the upper comparator.",
+   "source": "Yoo et al. (2016), BMJ Open 6(3):e008570; Paul & Moser (2009)",
+   "url": "https://bmjopen.bmj.com/content/6/3/e008570",
+   "type": "evidence"
+  },
+  {
+   "item": "Disability weight 0.396 (moderate depressive episode)",
+   "basis": "GBD 2013 weights",
+   "source": "Population Health Metrics 2021, Table 2",
+   "url": "https://pophealthmetrics.biomedcentral.com/articles/10.1186/s12963-021-00253-4/tables/2",
+   "type": "evidence"
+  },
+  {
+   "item": "Episode length 0.5 years",
+   "basis": "Median duration of a major depressive episode in the general population is 6 months (mean 10.7 months).",
+   "source": "ten Have et al. (2017), Acta Psychiatrica Scandinavica 136(3)",
+   "url": "https://research-portal.uu.nl/en/publications/duration-of-major-and-minor-depressive-episodes-and-associated-ri/",
+   "type": "evidence"
+  },
+  {
+   "item": "Excess mortality +50% in the year after job loss",
+   "basis": "Two independent sources agree: the lower bound of the 50-100% US estimate, and the international meta-analysis of 42 studies (20 million people), pooled HR 1.63, about 24% lower (roughly 1.48) once health behaviours are controlled. No usable East Asian estimate was found; HR 1.63 is in the sensitivity table.",
+   "source": "Roelfs et al. (2011), Soc Sci Med 72(6); Sullivan & von Wachter (2009)",
+   "url": "https://researchconnect.suny.edu/en/publications/losing-life-and-livelihood-a-systematic-review-and-meta-analysis-/",
+   "type": "evidence"
+  },
+  {
+   "item": "Baseline working-age mortality 0.088% a year",
+   "basis": "Macao's probability of dying between 15 and 60 is 38.8 per 1,000 (UN World Population Prospects 2024), spread evenly over 45 years.",
+   "source": "UN WPP 2024 via MeasuredWorld",
+   "url": "https://measuredworld.com/countries/macao/mortality/adult-mortality",
+   "type": "evidence"
+  },
+  {
+   "item": "43.5 years of life lost per excess death",
+   "basis": "DSEC life expectancy at birth 2022-2025 is 83.5 years; minus 40, the displacement age Sullivan & von Wachter use for their life-expectancy illustration.",
+   "source": "DSEC Time Series Database, ID 20001",
+   "url": "",
+   "type": "data"
+  }
+ ]
+}

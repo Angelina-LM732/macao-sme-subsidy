@@ -1,0 +1,68 @@
+{
+ "bank_rate": 0.0625,
+ "flat": {
+  "rate": 0.04,
+  "jobs": 81.02,
+  "cost": 53295682
+ },
+ "best": {
+  "topShare": 0.5,
+  "highRate": 0.0625,
+  "lowRate": 0.02,
+  "jobs": 120.73,
+  "cost": 50233858,
+  "gain": 0.4901
+ },
+ "by_share": [
+  {
+   "topShare": 0.1,
+   "highRate": 0.0625,
+   "lowRate": 0.03,
+   "gain": 0.1271,
+   "costVsFlat": 0.808
+  },
+  {
+   "topShare": 0.2,
+   "highRate": 0.0625,
+   "lowRate": 0.03,
+   "gain": 0.2605,
+   "costVsFlat": 0.845
+  },
+  {
+   "topShare": 0.25,
+   "highRate": 0.0625,
+   "lowRate": 0.03,
+   "gain": 0.3208,
+   "costVsFlat": 0.879
+  },
+  {
+   "topShare": 0.3,
+   "highRate": 0.0625,
+   "lowRate": 0.03,
+   "gain": 0.3733,
+   "costVsFlat": 0.923
+  },
+  {
+   "topShare": 0.4,
+   "highRate": 0.0625,
+   "lowRate": 0.02,
+   "gain": 0.4237,
+   "costVsFlat": 0.834
+  },
+  {
+   "topShare": 0.5,
+   "highRate": 0.0625,
+   "lowRate": 0.02,
+   "gain": 0.4901,
+   "costVsFlat": 0.943
+  }
+ ],
+ "note": "Equal-weighted profile grid; jobs saved relative to no subsidy; cost = expected subsidy outlay over 24 months.",
+ "uptake": {
+  "loans_mop": 4500000000,
+  "cap_mop": 10000000000,
+  "as_of": "2026-03-31",
+  "deadline": "2026-12-31",
+  "source": "https://www.gov.mo/zh-hant/news/1225389/"
+ }
+}

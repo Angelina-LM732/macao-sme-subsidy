@@ -1,0 +1,118 @@
+TOUR n=117 base=2026-10-18T11:43:06Z
+A,22.19715,113.54215,Museum of Macau|澳門博物館
+A,22.12576,113.55675,Natural and Agrarian Museum|土地暨自然博物館
+A,22.19455,113.55271,大賽車博物館 Museu do Grande Prémio|大賽車博物館
+K,22.18996,113.54797,Casino StarWorld|星際娛樂場
+A,22.18950,113.53885,南灣．雅文湖畔 Anim'Arte NAM VAN|南灣．雅文湖畔
+A,22.19708,113.54536,清安醫所門診部|清安醫所門診部
+A,22.19511,113.53835,Tung Sin Tong Historical Archive Exhibition Hall|同善堂歷史檔案陳列館
+A,22.19496,113.53815,Pawn Shop Museum|典當業展示館
+A,22.19161,113.53617,Chinese Temple|Chinese Temple
+A,22.20069,113.53860,Templo Yu Hong|Templo Yu Hong
+A,22.20005,113.53984,Garden House|東方基金會會址
+A,22.20790,113.54770,Mong-Ha Fortress|
+A,22.15353,113.55699,上海珍珍|上海珍珍
+A,22.15394,113.55973,Taipa Houses–Museum|龍環葡韻住宅式博物館
+A,22.19532,113.55262,Gallery of Macau common law|澳門基本法紀念館
+A,22.18846,113.54543,Fountain Show|噴泉表演
+A,22.18923,113.54731,Dragon of Fortune Show|富貴龍表濱
+A,22.19763,113.54053,舊城牆遺址 Troço das Antigas Muralhas de Defesa|舊城牆遺址
+A,22.14988,113.56800,The house of dancing water|水舞間
+A,22.19753,113.54121,Statue Matteo Ricci|Statue Matteo Ricci
+A,22.18922,113.54737,Tree of Prosperity Show|吉祥樹表演
+A,22.14831,113.57126,North Flower Wheel|North Flower Wheel
+A,22.14701,113.57117,South Flower Wheel|South Flower Wheel
+A,22.19161,113.54481,Security Forces Museum of Macau|澳門保安部隊博物館
+A,22.19363,113.54041,Museum of the Holy House of Mercy|仁慈堂博物館
+A,22.18875,113.53425,Zheng Guanying Memorial Museum|鄭觀應紀念館
+A,22.18884,113.53855,Pedal Boat|水上單車
+A,22.18963,113.55427,Love the Country  Love Macao Educational Basic for the Youth|青少年愛國愛澳教育基地
+K,22.14696,113.56542,The Londoner Casino|倫敦人娛樂場
+K,22.14494,113.56540,Londoner Grand Casino|倫敦人名匯娛樂場
+A,22.14364,113.55855,teamLab SuperNature|澳門teamLab超自然空間
+K,22.14442,113.57439,Grand Lisboa Palace Resort Casino|上葡京娛樂場
+K,22.18614,113.54821,MGM Macau Casino|澳門美高梅娛樂場
+K,22.14630,113.56795,MGM Cotai Casino|美獅美高梅娛樂場
+K,22.14568,113.55184,Broadway Macau Casino|百老匯娛樂場
+K,22.14369,113.56177,The Parisian Macau Casino|澳門巴黎人娛樂場
+K,22.14923,113.56644,City of Dream Casino|新濠天地娛樂場
+K,22.14130,113.56167,Studio City Casino|新濠影滙娛樂場
+K,22.14789,113.57209,Wynn Palace Casino|永利皇宮娛樂場
+K,22.14853,113.56049,The Venetian Macau Casino|澳門威尼斯人娛樂場
+K,22.14838,113.55432,Galaxy Macau Casino|澳門銀河娛樂場
+K,22.14543,113.56267,The Plaza Macao Casino|澳門百利宮娛樂場
+A,22.19499,113.54042,Treasure of Sacred Art|聖物寶庫
+A,22.14576,113.56430,Red Double-decker  Bus|英國紅巴士
+K,22.18987,113.54381,Casino Lisboa|葡京娛樂場
+A,22.14767,113.57119,Buccleuch Vases|
+A,22.14493,113.56486,The Londoner Carriage|
+A,22.14606,113.56634,Double-decker bus|
+A,22.14286,113.56295,Arc de triomphe|
+A,22.14412,113.56199,Eiffel Tower entrance (5th floor)|
+A,22.14848,113.55983,St. Mark's Square|St. Mark's Square
+A,22.18580,113.54814,Praça Grande|
+A,22.18610,113.54759,Poly MGM Museum|保利美高梅博物館
+A,22.20202,113.53955,The Patane Night Watch House|沙梨頭更館
+A,22.14723,113.56314,Rialto Bridge|
+A,22.20546,113.54485,3-fl market of 1936 with clock tower|
+A,22.19703,113.54237,Fortaleza do Monte|大炮台
+K,22.19156,113.55483,Sands Macau|澳門金沙
+K,22.16158,113.55503,新濠鋒娛樂場 Casino Altira|新濠鋒娛樂場
+A,22.14790,113.57142,Wynn Palace|永利皇宮
+A,22.18996,113.55412,Handover Gifts Museum of Macao|澳門回歸賀禮陳列館
+K,22.19755,113.55478,Jai Alai Hotel|回力酒店
+K,22.18860,113.54857,L'Arc Macau|澳門凱旋門
+K,22.19081,113.55680,邁亞米館|邁亞米館
+K,22.19095,113.54338,Grand Lisboa|新葡京
+A,22.19746,113.54086,Ruins of St. Paul|大三巴牌坊
+A,22.18607,113.53127,A-Ma Temple|媽閣廟
+A,22.18737,113.53263,Moorish Barracks|港務局大樓
+A,22.19792,113.54075,Museum of Sacred Art and Crypt  St. Paul|天主教藝術博物館
+A,22.15243,113.55574,Museum of Taipa and Coloane History|路氹歷史館
+A,22.15267,113.55568,Pak Tai Temple|北帝廟
+A,22.18595,113.53055,Macau Maritime Museum|海事博物館
+A,22.12663,113.55906,Macao Giant Panda Pavilion|澳門大熊貓館
+A,22.20964,113.54730,Lin Zexu Memorial Museum of Macao|澳門林則徐紀念館
+A,22.14409,113.57421,Grand Lisboa Palace Macau|澳門上葡京
+A,22.16132,113.55151,|
+A,22.15554,113.55943,Sam Po Temple|三婆廟
+A,22.15328,113.55778,觀音堂|觀音堂
+A,22.15390,113.55860,醫靈廟 Templo de I Leng|醫靈廟
+A,22.16201,113.55852,關帝廟 Templo de Kuan Tai|關帝廟
+A,22.20327,113.55498,Communications Museum|通訊博物館
+A,22.14654,113.55158,Broadway Macau|澳門百老匯
+A,22.14590,113.56534,The Londoner Macao|澳門倫敦人
+A,22.14748,113.55444,Galaxy Macau|澳門銀河
+K,22.19651,113.53699,Mocha Inner Harbour|摩卡内港
+A,22.19977,113.54782,Macao Tea Museum|澳門茶文化館
+A,22.19221,113.54954,Exhibition Center of the Sculpture Park of the Chinese Ethnics|中華民族雕塑園展覽館
+A,22.18858,113.53440,Mandarin's House|鄭家大屋
+A,22.20013,113.54349,消防博物館 Museu dos Bombeiros|消防博物館
+A,22.19990,113.54890,Sun Yat Sen Memorial House|澳門國父紀念館
+K,22.18974,113.54805,Starworld Hotel|星際酒店
+A,22.19262,113.54487,European War Museum|歐戰紀念館
+A,22.14590,113.56221,|
+A,22.14365,113.56168,The Parisian Macau|澳門巴黎人
+A,22.14358,113.56283,Macau Eiffel Tower|澳門巴黎鐵塔
+A,22.12663,113.55919,Macao Giant Panda Pavilion|澳門大熊貓館
+A,22.11697,113.55285,Pavilion of Animal Specimens in Macao|澳門動物標本展示館
+A,22.19777,113.54061,Na Tcha Exhibition Room|大三巴哪咤展館
+A,22.14581,113.56800,MGM Cotai|美獅美高梅
+A,22.14917,113.56651,City of Dreams|新濠天地
+A,22.18581,113.54788,MGM Macau|澳門美高梅
+A,22.19920,113.54281,Historical Memorial House of Kiang Wu Hospital|鏡湖歷史紀念館
+A,22.14669,113.56088,The Venetian Macao|澳門威尼斯人
+A,22.14562,113.56230,The Plaza Macao|澳門百利宮
+A,22.20538,113.54894,Xian Xinghai Memorial Museum|冼星海紀念館
+A,22.18808,113.54660,Wynn Macau|永利澳門
+A,22.19078,113.54332,Grand Lisboa|新葡京
+A,22.18980,113.54449,Hotel Lisboa|葡京酒店
+A,22.14358,113.56295,|
+A,22.14358,113.56272,|
+A,22.18640,113.55710,Macau Science Centre|澳門科學館
+A,22.19280,113.55688,Fisherman's Wharf of Macau|澳門漁人碼頭
+K,22.18803,113.54672,Wynn Macau|永利澳門渡假村
+H,22.19328,113.54032,Historic Centre of Macau|澳門歷史城區
+K,22.19689,113.55573,Casino Oceanus|海立方娛樂場
+A,22.18865,113.55463,Macau Museum of Art|澳門藝術博物館
+A,22.14092,113.56055,Studio City Macao|新濠影滙
