@@ -2,7 +2,7 @@
 
 **Live prototype:** https://angelina-lm732.github.io/macao-sme-subsidy/
 
-Imperial Hackathon Hong Kong & Macao 2026 · Open Challenge · team of 5. **My role:** science and modeling lead — model design, data simulation, the interactive prototype, part of the visualizations and the written proposal.
+Imperial Hackathon Hong Kong & Macao 2026 · Open Challenge · team of 5. **My role:** team lead and science & modeling lead — model design, data simulation, the interactive prototype, part of the visualizations and the written proposal.
 
 [![Prototype screenshot](docs/screenshot.jpg)](https://angelina-lm732.github.io/macao-sme-subsidy/)
 
